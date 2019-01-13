@@ -9,8 +9,38 @@ public class SortMain {
 
     public static void main(String[] args) {
         int[] unsorted = {25, 10, 5, 3, 8, 18, 9, 11};
+        mergesort(unsorted);
         quickSort2(unsorted, 0, unsorted.length - 1);
         System.out.println("sorted = " + Arrays.toString(unsorted));
+    }
+
+    private static void mergesort(int[] unsorted) {
+        int[] sorted = new int[unsorted.length];
+
+        int split = unsorted.length/2;
+        splitSortMerge(unsorted, 0, split-1, split, unsorted.length-1, sorted);
+    }
+
+    private static void splitSortMerge(int[] unsorted, int start1, int end1, int start2, int end2, int[] sorted) {
+        if (end1-start1 > 2){
+            int temp = start1+ (end1-start1)/2;
+            splitSortMerge(unsorted, start1, temp, temp+1, end1, sorted );
+        }
+        if (unsorted[start1] > unsorted[end1]){
+            sorted[start1] = unsorted[end1];
+            sorted[end1] = unsorted[start1];
+        }
+        if (end2-start2 > 2){
+            int temp = start2+ (end2-start2)/2;
+            splitSortMerge(unsorted, start2, temp, temp+1, end2, sorted );
+        }
+        if (unsorted[start2] > unsorted[end2]){
+            sorted[start2] = unsorted[end2];
+            sorted[end2] = unsorted[start2];
+        }
+
+        ///merge
+//        while
     }
 
     private static void quickSort2(int[] un, int i, int j) {
