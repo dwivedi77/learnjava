@@ -40,7 +40,28 @@ public class SortMain {
         }
 
         ///merge
-//        while
+        boolean firstDone = false;
+        boolean secondDone = false;
+        while(!firstDone && !secondDone){
+            if (unsorted[start1] > unsorted[start2]){
+                sorted[start1] = unsorted[start2];
+                start2++;
+            }else {
+                sorted[start1] = unsorted[start1];
+                start1++;
+            }
+            if (start1 > end1){
+                firstDone = true;
+            }
+            if (start2 > end2){
+                secondDone = true;
+            }
+        }
+        if (firstDone){
+            for (int i = start2; i < end2; i++) {
+//                sorted[]
+            }
+        }
     }
 
     private static void quickSort2(int[] un, int i, int j) {
