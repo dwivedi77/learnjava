@@ -8,43 +8,61 @@ import java.util.Arrays;
 public class SortMain {
 
     public static void main(String[] args) {
-        int[] unsorted = {25, 10, 5, 3, 8, 18, 9, 11};
-        mergesort(unsorted);
-        quickSort2(unsorted, 0, unsorted.length - 1);
-        System.out.println("sorted = " + Arrays.toString(unsorted));
+//        int[] unsorted = {25, 10, 5, 3, 8, 18, 9, 11};
+
+        int[] unsorted = {25, 10, 8, 3, 11};//, 9, 11, 3};
+        int[] sorted = mergesort(unsorted);
+//        quickSort2(unsorted, 0, unsorted.length - 1);
+        System.out.println("sorted = " + Arrays.toString(sorted));
     }
 
-    private static void mergesort(int[] unsorted) {
+    private static int[] mergesort(int[] unsorted) {
         int[] sorted = new int[unsorted.length];
 
         int split = unsorted.length/2;
         splitSortMerge(unsorted, 0, split-1, split, unsorted.length-1, sorted);
+        return sorted;
     }
 
     private static void splitSortMerge(int[] unsorted, int start1, int end1, int start2, int end2, int[] sorted) {
-        if (end1-start1 > 2){
+        if (end1-start1 > 1){
             int temp = start1+ (end1-start1)/2;
             splitSortMerge(unsorted, start1, temp, temp+1, end1, sorted );
         }
-        if (unsorted[start1] > unsorted[end1]){
-            sorted[start1] = unsorted[end1];
-            sorted[end1] = unsorted[start1];
-        }
-        if (end2-start2 > 2){
+        if (end2-start2 > 1){
             int temp = start2+ (end2-start2)/2;
             splitSortMerge(unsorted, start2, temp, temp+1, end2, sorted );
         }
-        if (unsorted[start2] > unsorted[end2]){
-            sorted[start2] = unsorted[end2];
-            sorted[end2] = unsorted[start2];
+
+        ///now the splitted arrays should be either size 2 or size 1. i.e. 1 <= end-start <=2
+        if (unsorted[start1] > unsorted[end1]){
+            //swap
+            int temp = unsorted[end1];
+            unsorted[end1] = unsorted[start1];
+            unsorted[start1] = temp;
         }
+//        else {
+//            sorted[start1] = unsorted[start1];
+//            sorted[end1] = unsorted[end1];
+//        }
+        if (unsorted[start2] > unsorted[end2]){
+            //swap
+            int temp = unsorted[start2];
+            unsorted[start2] = unsorted[end2];
+            unsorted[end2] = temp;
+        }
+//        else{
+//            sorted[start2] = unsorted[start2];
+//            sorted[end2] = unsorted[end2];
+//        }
 
         ///merge
         boolean firstDone = false;
         boolean secondDone = false;
+        int sortIdx = start1;
         while(!firstDone && !secondDone){
             if (unsorted[start1] > unsorted[start2]){
-                sorted[start1] = unsorted[start2];
+                sorted[sortIdx++] = unsorted[start2];
                 start2++;
             }else {
                 sorted[start1] = unsorted[start1];
@@ -58,9 +76,16 @@ public class SortMain {
             }
         }
         if (firstDone){
-            for (int i = start2; i < end2; i++) {
-//                sorted[]
+            for (int i = start2; i <= end2; i++) {
+                sorted[i] = unsorted[i];
             }
+            return;
+        }
+        if (secondDone){
+            for (int i = start1; i <= end1; i++) {
+                sorted[sortIdx++] = unsorted[i];
+            }
+            return;
         }
     }
 
