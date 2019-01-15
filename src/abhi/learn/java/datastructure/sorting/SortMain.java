@@ -10,7 +10,7 @@ public class SortMain {
     public static void main(String[] args) {
 //        int[] unsorted = {25, 10, 5, 3, 8, 18, 9, 11};
 
-        int[] unsorted = {25, 10, 8, 3, 11};//, 9, 11, 3};
+        int[] unsorted = {25, 10, 8, 3, 11, 44, 1};
         int[] sorted = mergesort(unsorted);
 //        quickSort2(unsorted, 0, unsorted.length - 1);
         System.out.println("sorted = " + Arrays.toString(sorted));
@@ -41,20 +41,12 @@ public class SortMain {
             unsorted[end1] = unsorted[start1];
             unsorted[start1] = temp;
         }
-//        else {
-//            sorted[start1] = unsorted[start1];
-//            sorted[end1] = unsorted[end1];
-//        }
         if (unsorted[start2] > unsorted[end2]){
             //swap
             int temp = unsorted[start2];
             unsorted[start2] = unsorted[end2];
             unsorted[end2] = temp;
         }
-//        else{
-//            sorted[start2] = unsorted[start2];
-//            sorted[end2] = unsorted[end2];
-//        }
 
         ///merge
         boolean firstDone = false;
@@ -65,7 +57,7 @@ public class SortMain {
                 sorted[sortIdx++] = unsorted[start2];
                 start2++;
             }else {
-                sorted[start1] = unsorted[start1];
+                sorted[sortIdx++] = unsorted[start1];
                 start1++;
             }
             if (start1 > end1){
@@ -77,7 +69,7 @@ public class SortMain {
         }
         if (firstDone){
             for (int i = start2; i <= end2; i++) {
-                sorted[i] = unsorted[i];
+                sorted[sortIdx++] = unsorted[i];
             }
             return;
         }
