@@ -8,11 +8,10 @@ public class Solution {
     private static int guess;
     public static void main(String[] args) {
         System.out.println("START");
-        guess = 1702766719;
-        int result = guessNumber(2126753390);
-        System.out.println("result="+result);
-        System.out.println("START");
+        long startTime = System.currentTimeMillis();
 
+        System.out.println("Time Taken="+(System.currentTimeMillis()-startTime));
+        System.out.println("END");
     }
 
     public static int guessNumber(int n) {
