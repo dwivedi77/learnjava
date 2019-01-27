@@ -9,11 +9,9 @@ public class SortMain {
 
     public static void main(String[] args) {
 //        int[] unsorted = {25, 10, 5, 3, 8, 18, 9, 11};
-
-        int[] unsorted = {25, 10, 8, 3, 11, 44, 1};
+        int[] unsorted = {25, 10, 8, 67, 11, 3, 99};
         int[] sorted = mergesort(unsorted);
-//        quickSort2(unsorted, 0, unsorted.length - 1);
-        System.out.println("sorted = " + Arrays.toString(sorted));
+        System.out.println("sorted = " + Arrays.toString(unsorted));
     }
 
     private static int[] mergesort(int[] unsorted) {
@@ -71,11 +69,17 @@ public class SortMain {
             for (int i = start2; i <= end2; i++) {
                 sorted[sortIdx++] = unsorted[i];
             }
+            for (int i = start1; i <= end2 ; i++) {
+                unsorted[i] = sorted[i];
+            }
             return;
         }
         if (secondDone){
             for (int i = start1; i <= end1; i++) {
                 sorted[sortIdx++] = unsorted[i];
+            }
+            for (int i = start1; i <= end2 ; i++) {
+                unsorted[i] = sorted[i];
             }
             return;
         }
