@@ -1,5 +1,7 @@
 package abhi.learn.java.leetcode.easy;
 
+import java.util.LinkedList;
+
 /**
  * Created by abhi on 2/3/2019.
  */
@@ -9,7 +11,8 @@ public class EasyMain2 {
 
         System.out.println("START");
         long startTime = System.currentTimeMillis();
-        int answer = removeDuplicates(new int[]{1,2,2,2,3,4,4,4});
+        ListNode head = createLinkedList(new int[]{1,2,3});
+        ListNode reversed = reverseList(head);
         System.out.println("Answer=");
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
@@ -30,8 +33,16 @@ public class EasyMain2 {
         }
         return nums.length-dupes;
     }
+    //https://leetcode.com/problems/reverse-linked-list/
+    private static ListNode reverseList(ListNode head) {
+        if (head == null)
+            return null;
 
-    //// https://leetcode.com/problems/merge-two-sorted-lists/
+        ListNode node = reverseList(head.next);
+        node.next = head;
+        return node;
+    }
+
      /**Definition for singly-linked list.**/
      private static class ListNode {
          int val;
@@ -43,6 +54,7 @@ public class EasyMain2 {
              return val + ", next=" + next ;
          }
      }
+    //// https://leetcode.com/problems/merge-two-sorted-lists/
     private static ListNode mergeTwoLists(ListNode l1, ListNode l2) {
         if (l1 == null) return l2;
         if (l2 == null) return l1;
