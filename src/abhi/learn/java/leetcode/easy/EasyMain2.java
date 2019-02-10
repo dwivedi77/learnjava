@@ -1,7 +1,6 @@
 package abhi.learn.java.leetcode.easy;
 
-import java.util.LinkedList;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Created by abhi on 2/3/2019.
@@ -12,25 +11,72 @@ public class EasyMain2 {
 
         System.out.println("START");
         long startTime = System.currentTimeMillis();
-        ListNode head = createLinkedList(new int[]{1,2,3});
-        ListNode reversed = reverseListCopy(head);
-        System.out.println("Answer=");
+//        int output = printRemainder(-99, -99);
+        int output = removeDuplicates3(new int[]{1});
+        System.out.println("Answer="+output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
     }
 
+    private static int printRemainder(int x, int y) {
+        return (x%y);
+    }
 
-    private static int removeDuplicates(int[] nums) {
-        int dupes = 0;
-
-        for (int i = 0; i < nums.length-1; ) {
-            int j = i+1;
-            while (j<nums.length && nums[i]==nums[j] ){
-                dupes++;
-                j++;
+    //https://leetcode.com/problems/remove-duplicates-from-sorted-array/
+    private static int removeDuplicates3(int[] nums) {
+        if (nums == null) return 0;
+        int prev = 0;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[prev] != nums[i]){
+                nums[++prev] = nums[i];
             }
-            nums[i+1] = nums[j];
-            i=j;
+        }
+        return prev+1;
+    }
+
+    //https://leetcode.com/problems/remove-duplicates-from-sorted-array/
+    private static int removeDuplicates2(int[] nums) {
+        if (nums == null)
+            return 0;
+
+        LinkedHashMap<Integer, Integer> map = new LinkedHashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (map.get(nums[i]) == null){
+                map.put(nums[i], i);
+            }
+        }
+        int idx = 0;
+
+        for (Integer key: map.keySet()) {
+            nums[idx++]= key;
+        }
+        return map.size();
+    }
+
+    //https://leetcode.com/problems/remove-duplicates-from-sorted-array/
+    private static int removeDuplicates(int[] nums) {
+        if (nums == null || nums.length == 0)
+            return 0;
+        if (nums.length==1) return nums.length;
+
+        int dupes = 0;
+        int[] output = new int[nums.length];
+        int idx = 0;
+        output[idx] = nums[idx];///copy the 1st element to start with
+        idx++;
+        for (int i = 0, j=1; j < nums.length; ) {
+            if (nums[i] == nums[j]){
+                j++;
+                dupes++;
+                continue;
+            }else {
+                output[idx++] = nums[j];
+                i = j++;
+            }
+        }
+        if (dupes==0) return nums.length;
+        for (int i = 0; i <= nums.length-dupes; i++) {
+            nums[i] = output[i];
         }
         return nums.length-dupes;
     }
@@ -60,28 +106,17 @@ public class EasyMain2 {
     }
 
     //https://leetcode.com/problems/reverse-linked-list/
+    private static ListNode next = null;
+    private static ListNode prev = null;
     private static ListNode reverseList(ListNode head) {
         if (head == null)
-            return null;
-        Stack<ListNode> stack = new Stack<>();
-        while (head!= null){
-            ListNode temp = null;
-            stack.push(head);
-            head = head.next;
-        }
-        ListNode output = null;
-        ListNode temp = null;
-        int size = stack.size();
-        for (int i = 0; i < size; i++) {
-            if (i==0){
-                output = stack.pop();
-                temp = output;
-            }else{
-                temp.next = stack.pop();
-                temp = temp.next;
-            }
-        }
-        return output;
+            return prev;
+
+        next = head.next;
+        prev = head;
+        head.next = prev;
+        head = next;
+        return reverseList(next);
     }
 
      /**Definition for singly-linked list.**/
