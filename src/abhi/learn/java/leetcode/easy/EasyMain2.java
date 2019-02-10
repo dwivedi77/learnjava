@@ -1,6 +1,7 @@
 package abhi.learn.java.leetcode.easy;
 
 import java.util.LinkedList;
+import java.util.Stack;
 
 /**
  * Created by abhi on 2/3/2019.
@@ -12,7 +13,7 @@ public class EasyMain2 {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
         ListNode head = createLinkedList(new int[]{1,2,3});
-        ListNode reversed = reverseList(head);
+        ListNode reversed = reverseListCopy(head);
         System.out.println("Answer=");
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
@@ -34,13 +35,53 @@ public class EasyMain2 {
         return nums.length-dupes;
     }
     //https://leetcode.com/problems/reverse-linked-list/
+    private static ListNode reverseListCopy(ListNode head) {
+        if (head == null)
+            return head;
+
+        Stack<ListNode> stack = new Stack<ListNode>();
+        ListNode tempHead = null;
+        ListNode dummy = new ListNode(0);
+        tempHead = dummy;
+
+        while(head != null) {
+            stack.push(head);
+            head = head.next;
+        }
+
+        while(stack.size() != 0) {
+            dummy.next = stack.pop();
+            dummy = dummy.next;
+        }
+
+        dummy.next = null;
+        return tempHead.next;
+
+    }
+
+    //https://leetcode.com/problems/reverse-linked-list/
     private static ListNode reverseList(ListNode head) {
         if (head == null)
             return null;
-
-        ListNode node = reverseList(head.next);
-        node.next = head;
-        return node;
+        Stack<ListNode> stack = new Stack<>();
+        while (head!= null){
+            ListNode temp = null;
+            stack.push(head);
+            head = head.next;
+        }
+        ListNode output = null;
+        ListNode temp = null;
+        int size = stack.size();
+        for (int i = 0; i < size; i++) {
+            if (i==0){
+                output = stack.pop();
+                temp = output;
+            }else{
+                temp.next = stack.pop();
+                temp = temp.next;
+            }
+        }
+        return output;
     }
 
      /**Definition for singly-linked list.**/
