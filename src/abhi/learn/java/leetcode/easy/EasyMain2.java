@@ -12,14 +12,63 @@ public class EasyMain2 {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
 //        int output = printRemainder(-99, -99);
-        int output = removeDuplicates3(new int[]{1});
+        boolean output = buddyStrings("aa", "aa");
         System.out.println("Answer="+output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
     }
 
+    ////https://leetcode.com/problems/buddy-strings/
+    private static boolean buddyStrings(String A, String B) {
+        int count = 0;
+        if (A == null || B == null){
+            return false;
+        }else if (A.length() != B.length())
+            return false;
+        int first = -1;
+
+        for (int i = 0; i < A.length(); i++) {
+            char a = A.charAt(i);
+            char b = B.charAt(i);
+            if (a != b){
+                if (first != -1 && i != first && a == B.charAt(first) && A.charAt(first) == b){
+                    count++;
+                }else {
+                    first = i;
+                }
+            }
+        }
+        if (count==1)
+            return true;
+        else
+            return false;
+
+    }
+
     private static int printRemainder(int x, int y) {
         return (x%y);
+    }
+    ///3,4,2,3   1,5,4,6,7,10,8,9    -1,4,2,3
+    ///https://leetcode.com/problems/non-decreasing-array/
+    private static boolean checkPossibility(int[] nums) {
+        if (nums ==null || nums.length <=1)
+            return true;
+
+        int failCount = 0;
+        for (int i = 0; i < nums.length-1; i++) {
+            int j = i+1;
+            if (nums[i]>nums[j]){
+//                if (i==0)
+//                    nums[i]=nums[j];
+//                else
+                    nums[j]=nums[i];
+                failCount++;
+            }
+            if (failCount>1)
+                return false;
+        }
+
+        return true;
     }
 
     //https://leetcode.com/problems/remove-duplicates-from-sorted-array/
