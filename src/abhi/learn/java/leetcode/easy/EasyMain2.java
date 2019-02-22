@@ -45,8 +45,18 @@ public class EasyMain2 {
             return false;
         }else if (A.length() != B.length())
             return false;
+        else if(A.length() <= 1){
+            return false;
+        }else if (A.equals(B)){//if they r equal, we can still swap 1 char, if any char is repeated...
+            for (int i = 0; i < A.length(); i++) {
+                for (int j = i+1; j < A.length(); j++) {
+                    if (A.charAt(i) == A.charAt(j))
+                        return true;
+                }
+            }
+            return false;
+        }
         int first = -1;
-
         for (int i = 0; i < A.length(); i++) {
             char a = A.charAt(i);
             char b = B.charAt(i);
@@ -62,7 +72,6 @@ public class EasyMain2 {
             return true;
         else
             return false;
-
     }
 
     private static int printRemainder(int x, int y) {
