@@ -11,11 +11,31 @@ public class EasyMain2 {
 
         System.out.println("START");
         long startTime = System.currentTimeMillis();
-//        int output = printRemainder(-99, -99);
-        boolean output = buddyStrings("aa", "aa");
+        ListNode output = removeElements(createLinkedList(new int[]{1,2,6,3,4,5,6}), 6);
         System.out.println("Answer="+output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
+
+    ////https://leetcode.com/problems/remove-linked-list-elements/
+    private static ListNode removeElements(ListNode head, int val) {
+        ListNode output = head;
+        ListNode prev = head;
+        while (head != null){
+            if (head.val == val){
+                if (prev == head){
+                    output = head.next;
+                    prev = head.next;
+                    head = head.next;
+                }else {
+                    prev.next = head.next;
+                }
+                continue;
+            }
+            prev = head;
+            head = head.next;
+        }
+        return output;
     }
 
     ////https://leetcode.com/problems/buddy-strings/
