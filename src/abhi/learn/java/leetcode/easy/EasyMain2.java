@@ -11,10 +11,23 @@ public class EasyMain2 {
 
         System.out.println("START");
         long startTime = System.currentTimeMillis();
-        ListNode output = removeElements(createLinkedList(new int[]{1,2,6,3,4,5,6}), 6);
+        ListNode output = deleteDuplicates(createLinkedList(new int[]{1}));
         System.out.println("Answer="+output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
+
+    ///https://leetcode.com/problems/remove-duplicates-from-sorted-list/
+    private static ListNode deleteDuplicates(ListNode head) {
+        ListNode curr = head;
+        while (curr!= null){
+            if (curr.next != null && curr.val == curr.next.val){
+                curr.next=curr.next.next;continue;
+            }
+            curr = curr.next;
+        }
+
+        return head;
     }
 
     ////https://leetcode.com/problems/remove-linked-list-elements/
