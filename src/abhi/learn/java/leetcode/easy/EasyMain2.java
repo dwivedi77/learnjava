@@ -11,7 +11,7 @@ public class EasyMain2 {
 
         System.out.println("START");
         long startTime = System.currentTimeMillis();
-        ListNode output = removeElements(createLinkedList(new int[]{1,2,6,3,4,5,6}), 6);
+        ListNode output = removeElements(createLinkedList(new int[]{1,1}), 2);
         System.out.println("Answer="+output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
@@ -23,12 +23,13 @@ public class EasyMain2 {
         ListNode prev = head;
         while (head != null){
             if (head.val == val){
-                if (prev == head){
+                if (output == head){
                     output = head.next;
                     prev = head.next;
                     head = head.next;
                 }else {
                     prev.next = head.next;
+                    head=head.next;
                 }
                 continue;
             }
