@@ -11,10 +11,14 @@ import java.util.Scanner;
  */
 public class Solution {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args)  {
         /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
 
 
+
+    }
+
+    private static void someMethod()throws IOException{
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String s;
         while ((s = in.readLine()) != null) {
@@ -27,38 +31,44 @@ public class Solution {
             for (int i = 0; i < input.length; i++) {
                 if (prev == ' ') {// this is for first iteration
                     prev = input[i];
-                    prevRem = prev%2;
+                    prevRem = prev % 2;
                     sb.append(prev);
                     continue;
                 }
                 char next = input[i];
-                int nextRem = next%2;
+                int nextRem = next % 2;
 
-                if (prev == 48 || next == 48){ //if either of the char equal to 0
-                    sb.append(next); prev = next;continue;
+                if (prev == 48 || next == 48) { //if either of the char equal to 0
+                    sb.append(next);
+                    prev = next;
+                    continue;
                 }
-                switch (prevRem + nextRem){
+                switch (prevRem + nextRem) {
                     case 0: //when both are even
                         sb.append('*');
                         sb.append(next);
-                        prev = next; prevRem = nextRem; //remembering the previous values for next itr
+                        prev = next;
+                        prevRem = nextRem; //remembering the previous values for next itr
                         break;
                     case 1:
                         sb.append(next);
-                        prev = next; prevRem = nextRem; //remembering the previous values for next itr
+                        prev = next;
+                        prevRem = nextRem; //remembering the previous values for next itr
                         break;
                     case 2://when both are odd
                         sb.append('-');
                         sb.append(next);
-                        prev = next; prevRem = nextRem; //remembering the previous values for next itr
+                        prev = next;
+                        prevRem = nextRem; //remembering the previous values for next itr
                         break;
                 }
 
             }
             System.out.println(sb.toString());
         }
-
     }
+
+
 
     private static void findLongestSuffix(){
         Scanner in = new Scanner(System.in);
