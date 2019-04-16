@@ -1,4 +1,4 @@
-package abhi.learn.java.leetcode.easy;
+package abhi.learn.java.leetcode.medium;
 
 import java.util.*;
 
@@ -16,6 +16,34 @@ public class MediumMain {
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
 
+    }
+
+    ///https://leetcode.com/problems/next-greater-node-in-linked-list/
+    private static int[] nextLargerNodes(ListNode head) {
+        ArrayList<Integer> list = new ArrayList<>();
+        ListNode first = head;
+        ListNode next = null;
+        if (next == null){
+            return new int[]{head.val};
+        }
+        while (first != null){
+            next = first.next;
+            while (next != null){
+                if (first.val < next.val){
+                    list.add(next.val);break;
+                }else{
+                    next = next.next;
+                }
+            }
+            first = first.next;
+
+        }
+        int[] output = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            output[i] = list.get(i);
+        }
+
+        return output;
     }
 
     ///https://leetcode.com/problems/find-all-duplicates-in-an-array/
@@ -76,6 +104,12 @@ public class MediumMain {
                 return idx;
             }
         }
+    }
+
+    public class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int x) { val = x; }
     }
 
 }
