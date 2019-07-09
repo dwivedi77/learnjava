@@ -11,10 +11,12 @@ public class MediumMain {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
 
-        List<Integer> out = findDuplicates(new int[]{2,3,5,7,3,5});
+        ListNode head = createLinkedList(new int[]{2,1,5});
+        int[] out = nextLargerNodes(head);
         System.out.println("Answer="+out);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+
 
     }
 
@@ -22,19 +24,23 @@ public class MediumMain {
     private static int[] nextLargerNodes(ListNode head) {
         ArrayList<Integer> list = new ArrayList<>();
         ListNode first = head;
-        ListNode next = null;
+        ListNode next = first.next;
         if (next == null){
-            return new int[]{head.val};
+            return new int[]{0};
         }
         while (first != null){
+            boolean added = false;
             next = first.next;
             while (next != null){
                 if (first.val < next.val){
-                    list.add(next.val);break;
+                    list.add(next.val);
+                    added = true;
+                    break;
                 }else{
                     next = next.next;
                 }
             }
+            if (!added) list.add(0);
             first = first.next;
 
         }
@@ -42,7 +48,6 @@ public class MediumMain {
         for (int i = 0; i < list.size(); i++) {
             output[i] = list.get(i);
         }
-
         return output;
     }
 
@@ -106,10 +111,25 @@ public class MediumMain {
         }
     }
 
-    public class ListNode {
+    static class ListNode {
         int val;
         ListNode next;
         ListNode(int x) { val = x; }
     }
 
+    private static ListNode createLinkedList(int[] ary){
+        ListNode out = null;
+        ListNode curr = null;
+        for (int i = 0; i < ary.length; i++) {
+            if (out == null){
+                out = new ListNode(ary[i]);
+                curr = out;
+            }else{
+                curr.next = new ListNode(ary[i]);
+                curr = curr.next;
+            }
+        }
+        curr = null;
+        return out;
+    }
 }

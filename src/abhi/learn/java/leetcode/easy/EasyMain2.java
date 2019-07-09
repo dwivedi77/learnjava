@@ -11,12 +11,39 @@ public class EasyMain2 {
 
         System.out.println("START");
         long startTime = System.currentTimeMillis();
-        ListNode head = createLinkedList(new int[]{4,5,1,3});
-
-        deleteNode(head.next);
-//        System.out.println("Answer="+output);
+        int[] output = productExceptSelf(new int[]{1,2,3,4});
+        System.out.println("Answer="+output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
+
+
+/////    https://leetcode.com/problems/product-of-array-except-self/
+    private static int[] productExceptSelf(int[] nums) {
+        if (nums == null || nums.length == 0) return nums;
+
+        int[] out = new int[nums.length];
+        int multi = 1;
+//        for (int i = 0; i < nums.length; i++) {
+//            multi *= nums[i];
+//        }
+//        out[0] = multi;
+//
+//        for (int i = 0; i < nums.length; i++) {
+//            out[i] = multi/nums[i];
+//        }
+
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = 0; j < nums.length; j++) {
+                if (i==j) continue;
+                multi *= nums[j];
+            }
+            out[i] = multi;
+            multi = 1;
+        }
+
+
+        return out;
     }
 
     ////https://leetcode.com/problems/delete-node-in-a-linked-list/
@@ -296,6 +323,7 @@ public class EasyMain2 {
                 curr = curr.next;
             }
         }
+        curr = null;
         return out;
     }
 }
