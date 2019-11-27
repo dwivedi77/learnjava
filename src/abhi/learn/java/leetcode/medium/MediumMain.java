@@ -11,15 +11,399 @@ public class MediumMain {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
 
-        ListNode head = createLinkedList(new int[]{2,1,5});
-        int[] out = nextLargerNodes(head);
-        System.out.println("Answer="+out);
+
+        System.out.println("MAX="+Integer.MAX_VALUE);
+        System.out.println("MIN="+Integer.MIN_VALUE);
+//        int output = Integer.MIN_VALUE/10 + 147483647;
+        int output = myAtoi("2147483646");
+        System.out.println("Answer="+output);
+
+
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
 
+    /// https://leetcode.com/problems/string-to-integer-atoi/
+    private static int myAtoi(String str) {
+        int output = 0;
+        int multiplier = 0;
+        boolean negative = false;
+        if (str == null ) return output;
+
+        str = str.trim();
+        if (str.length() == 0) return output;
+
+        int i = 0;
+        char f = str.charAt(0);
+        if (f=='-'){
+            multiplier = -1;
+            i = 1; //skip the first char
+        }else if (f == '+'){
+            multiplier = 1;
+            i = 1; //skip the first char
+        }else {
+            multiplier = 1;
+            i = 0; //do not skip the first char
+        }
+
+        for (; i < str.length(); i++) {
+            char x = str.charAt(i);
+
+            int val = 0;
+            switch (x){
+                case '1':
+                    val = 1;break;
+                case '2':
+                    val = 2;break;
+                case '3':
+                    val = 3;break;
+                case '4':
+                    val = 4;break;
+                case '5':
+                    val = 5;break;
+                case '6':
+                    val = 6;break;
+                case '7':
+                    val = 7;break;
+                case '8':
+                    val = 8;break;
+                case '9':
+                    val = 9;break;
+                case '0':
+                    val = 0;break;
+                default: return output*multiplier;
+            }
+            if (multiplier == 1 || multiplier ==0){
+                if (Integer.MAX_VALUE/10 - output > val){
+                    output = (output * 10) + val;
+                }else if (Integer.MAX_VALUE/10 - output == 0){
+                    if (Integer.MAX_VALUE%10 > val){
+                        output = (output * 10) + val;
+                    }else {
+                        return Integer.MAX_VALUE;
+                    }
+                }
+                else {
+                    return Integer.MAX_VALUE;
+                }
+            }else {
+                if (Integer.MIN_VALUE/10 + output < multiplier*val){
+                    output = (output * 10) + val;
+                }else if (Integer.MIN_VALUE/10 + output == 0){
+                    if (Integer.MIN_VALUE%10 < multiplier*val){
+                        output = (output * 10) + val;
+                    }else {
+                        return Integer.MIN_VALUE;
+                    }
+                }else {
+                    return Integer.MIN_VALUE;
+                }
+            }
+        }
+        return output*multiplier;
+    }
+
+
+
+    /// https://leetcode.com/problems/zigzag-conversion/
+    private static String convertToZigZag(String s, int numRows) {
+        StringBuilder sb = new StringBuilder();
+        char[][] matrix = new char[numRows][s.length()];
+        int idx = 0;
+        boolean done = false; // to stop when all characters are written in matrix
+
+        boolean zigzag = false;
+        int zigzagIdx = numRows-2;
+        for (int j = 0; j < s.length(); j++) {
+            for (int i = 0; i < matrix.length; i++) {
+
+                if (zigzag){
+                    matrix[zigzagIdx--][j] = s.charAt(idx++);
+                    if (idx == s.length()) done = true;
+                    break;
+                }else {
+                    matrix[i][j] = s.charAt(idx++);
+                }
+                if (idx == s.length()) {
+                    done = true;
+                    break;
+                }
+            }
+            if (done) break;
+            if (zigzagIdx <= 0 || zigzagIdx >= numRows-2){
+                zigzag = !zigzag;
+                zigzagIdx = numRows-2;
+            }
+
+        }
+
+
+        return sb.toString();
+    }
+
+
+    /// https://leetcode.com/problems/longest-palindromic-substring/
+    private static String longestPalindrome(String s) {
+        if (s == null || s.length() <= 1) return s;
+        String longest = s.substring(0,1);
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = s.length()-1; j > i ; j--) {
+                String sub = s.substring(i, j+1);
+                if (isPalindrome(sub)){
+                    if (longest.length() < sub.length())
+                        longest = sub;
+                }
+            }
+        }
+        return longest;
+    }
+
+    private static String longestPalindrome2(String s) {
+        if (s == null || s.length() <= 1) return s;
+        String longest = s.substring(0,1);
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = i+longest.length(); j < s.length(); j++) {
+                String sub = s.substring(i, j+1);
+                if (isPalindrome(sub)){
+                    longest = sub;
+                }
+            }
+        }
+        return longest;
+    }
+
+    private static boolean isPalindrome(String sub) {
+        int i = 0, j= sub.length()-1;
+        while (i<=j){
+            if (sub.charAt(i) == sub.charAt(j)){
+                i++;j--;
+            }else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    /// https://leetcode.com/problems/add-two-numbers/
+    private static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        int carryOver = 0;
+        ListNode output = new ListNode(0);
+        ListNode temp = output;
+        while (l1 != null || l2 != null || carryOver > 0){
+            temp.next = new ListNode(0);
+            temp = temp.next;
+            int sum = (l1 != null ? l1.val : 0) + (l2 != null ? l2.val : 0) + carryOver;
+            temp.val = sum%10;
+            carryOver = sum/10;
+            if (l1 != null) l1 = l1.next;
+            if (l2 != null) l2 = l2.next;
+        }
+        return output.next;
+    }
+
+
+    /// https://leetcode.com/problems/path-in-zigzag-labelled-binary-tree/
+    private static List<Integer> pathInZigZagTree(int label) {
+        List<Integer> output = new ArrayList<>();
+        if (label <= 0)
+            return output;
+        int mark = 1;
+        int row = 1;
+        int[] one = new int[]{mark++};
+        row++;
+        List list = new ArrayList<>();
+        list.add(one);
+
+        while (mark <= label){
+            int[] ary = new int[(row-1)*2];
+            for (int i = 0; i < ary.length; i++) {
+                ary[i] = (mark > label ? 0 : mark++);
+            }
+            list.add(ary);
+            row++;
+        }
+
+        return null;
+    }
+
+
+    /// https://leetcode.com/problems/first-bad-version/
+    private static int firstBadVersion(int n) {
+        if (n<=1) return n;
+        int i=1,j=n, mid=0;
+
+        while (i<j){
+            mid=(i+j)/2;
+            if (isBadVersion(mid)){
+                    if (mid>0 && !isBadVersion(mid-1)){
+                        return mid;
+                    }else {
+                        j=mid;
+                    }
+            }else {
+                i = mid+1;
+            }
+        }
+        return mid;
+    }
+    static boolean isBadVersion(int version){
+        if (version >= 2) return true;
+        else return false;
+    }
+
+
+    ///https://leetcode.com/problems/ugly-number-ii/
+    private static int nthUglyNumber(int n) {
+        if (n < 1) return 0;
+        if (n < 7) return n;
+        int cnt = 6;
+        int nth = 0;
+        for (int i = 8; i < Integer.MAX_VALUE; i++) {
+            if (isUgly(i)){
+                cnt++;
+                if(cnt >= n) {nth = i; break;}
+            }
+        }
+        return nth;
+    }
+
+
+    /// https://leetcode.com/problems/ugly-number/
+    private static boolean isUgly(int num) {
+        if (num < 1) return false;
+        while(num%2 == 0){
+            num = num/2;
+        }
+        while(num%3 == 0){
+            num = num/3;
+        }
+        while(num%5 == 0){
+            num = num/5;
+        }
+        if (Math.abs(num) <= 5) return true;
+        else return false;
 
     }
 
+
+    /// https://leetcode.com/problems/count-primes/
+    private static int countPrimes(int n) {
+        if (n<=2) return 0;
+        int primes = 1;
+        for (int i = 3; i < n; i++) {
+            boolean isPrime = isPrime(i);
+            if (isPrime) primes++;
+        }
+        return primes;
+    }
+
+    private static boolean isPrime(int num){
+        if (num < 2) return false;
+        for (int i = 2; i <= num; i++) {
+            if (i*i <= num){
+                if (num%i == 0) return false;
+            }else break;
+
+        }
+        return true;
+    }
+
+    private static String makeBiggestNoPossible(int[] ary){
+        if (ary == null || ary.length == 0) return "0";
+        int[] result = new int[ary.length];
+
+        int size = 0;
+        for (int i = 0; i < ary.length; i++) {
+            for (int j = 0; j <= size; j++) {
+                int x = ary[i];
+                int y = result[j];
+                if (x < 10 && y < 10){
+                    if (x > y){//insert
+                        result = insertInToArray(result, j, x);
+                        size++;
+                        break;
+                    }else{
+                        continue;
+                    }
+                }else{
+                    int a1 = concatenateIntegers(x, y);
+                    int a2 = concatenateIntegers(y, x);
+                    if (a1 > a2){//insert
+                        result = insertInToArray(result, j, x);
+                        size++;
+                        break;
+                    }else{
+                        continue;
+                    }
+                }
+            }
+        }
+        return Arrays.toString(result);
+    }
+    //inserts an integer into an array at a given position.
+    private static int[] insertInToArray(int[] a, int pos, int num) {
+        int[] result = new int[a.length];
+        for(int i = 0; i < pos; i++)
+            result[i] = a[i];
+        result[pos] = num;
+        for(int i = pos + 1; i < a.length; i++)
+            result[i] = a[i - 1];
+        return result;
+    }
+
+    //x=109, y=53, output = 10953
+    private static int concatenateIntegers(int x, int y){
+        if (x == 0) return y;
+        if (y == 0) return x*10 + y;
+        int temp = y;
+        while(temp > 0){
+            temp /= 10;
+            x*=10;
+        }
+        return x+y;
+    }
+
+    private static String largestNumber(int[] nums) {
+        String[] input = new String[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            input[i] = ""+nums[i];
+        }
+        return createBiggestInteger(input);
+    }
+
+    private static String createBiggestInteger(String[] input){
+        Arrays.sort(input, new Comparator<String>() {
+            @Override
+            public int compare(String first, String second) {
+                if (first == null || first.equals(second))
+                    return 0;
+
+                int i=0, j=0;
+                while(i<first.length() && j<second.length()){
+                    char f = first.charAt(i);
+                    char s = second.charAt(j);
+                    if (f > s) return 1;
+                    else if(f < s) return -1;
+                    else{
+                        if (i == first.length()-1 && j == second.length()-1) return 0;
+                        else if (i == first.length()-1 && j < second.length()-1) {i=0;j++;continue;}
+                        else if (i < first.length()-1 && j == second.length()-1) {i++;j=0;continue;}
+                        else {i++;j++;}
+                    }
+                }
+                return 0;
+            }
+        });
+        StringBuilder sb = new StringBuilder();
+        for (int i = input.length-1; i >= 0; i--) {
+            sb.append(input[i]);
+        }
+        while (sb.length() >= 2 && sb.charAt(0)=='0'){
+            sb.deleteCharAt(0);
+        }
+        return sb.toString();
+    }
     ///https://leetcode.com/problems/next-greater-node-in-linked-list/
     private static int[] nextLargerNodes(ListNode head) {
         ArrayList<Integer> list = new ArrayList<>();
@@ -117,19 +501,14 @@ public class MediumMain {
         ListNode(int x) { val = x; }
     }
 
-    private static ListNode createLinkedList(int[] ary){
-        ListNode out = null;
-        ListNode curr = null;
-        for (int i = 0; i < ary.length; i++) {
-            if (out == null){
-                out = new ListNode(ary[i]);
-                curr = out;
-            }else{
-                curr.next = new ListNode(ary[i]);
-                curr = curr.next;
-            }
+    private static ListNode createLinkedList(int[] nodeValues){
+        // Now convert that list into linked list
+        ListNode dummyRoot = new ListNode(0);
+        ListNode ptr = dummyRoot;
+        for(int item : nodeValues) {
+            ptr.next = new ListNode(item);
+            ptr = ptr.next;
         }
-        curr = null;
-        return out;
+        return dummyRoot.next;
     }
 }
