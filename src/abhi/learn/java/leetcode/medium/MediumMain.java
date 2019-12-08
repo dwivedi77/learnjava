@@ -11,16 +11,124 @@ public class MediumMain {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
 
-
-        System.out.println("MAX="+Integer.MAX_VALUE);
-        System.out.println("MIN="+Integer.MIN_VALUE);
-//        int output = Integer.MIN_VALUE/10 + 147483647;
-        int output = myAtoi("2147483646");
+        ListNode head = createLinkedList(new int[]{1,2,3,4,5});
+        Object output = swapPairs(head);
         System.out.println("Answer="+output);
 
 
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
+
+    /// https://leetcode.com/problems/swap-nodes-in-pairs/
+    private static ListNode swapPairs(ListNode head) {
+        if (head == null || head.next == null) return head;
+        ListNode first = head;
+        ListNode prevHead = head;
+        ListNode second = head.next;
+
+
+        while (second != null){
+            ListNode temp = second.next;
+            second.next = first;
+            first.next = temp;
+//            prevHead = /
+        }
+        return head;
+    }
+
+
+    /// https://leetcode.com/problems/generate-parentheses/
+    private static List<String> generateParenthesis(int n) {
+        /// TODO
+        List<String> output = new ArrayList<>();
+        if (n <= 0 ) return output;
+        LinkedHashSet<String> values = new LinkedHashSet<>();
+        addParenthesisToSet(n, "", values);
+
+
+        return output;
+    }
+
+    private static void addParenthesisToSet(int n, String valid, LinkedHashSet<String> values) {
+        if (n == 0) return;
+        values.add("("+valid+")");
+        values.add("("+")"+valid);
+        values.add(valid+"("+")");
+        int len = values.size();
+        for (Iterator<String> itr = values.iterator(); itr.hasNext();){
+            addParenthesisToSet(n-1, itr.next(), values);
+        }
+    }
+
+    //// https://leetcode.com/problems/4sum/
+    private static List<List<Integer>> fourSum(int[] nums, int target) {
+        List<List<Integer>> output = new ArrayList<>();
+        if (nums == null || nums.length == 0) return output;
+        Arrays.sort(nums);
+
+        int l1 = 0;int l2=0;
+        int h1 = nums.length-1, h2=h1;
+
+        for (; l1 < h2; l1++) {
+            for (; h1 > l2; h1--) {
+
+                if (l1 < h1 - 1) l2 = l1 + 1;
+                else break;
+                if (h1 > l1 + 1) h2 = h1 - 1;
+                else break;
+                while (l2 < h2) {
+                    int sum = nums[l1] + nums[h1] + nums[l2] + nums[h2];
+                    if (sum < target) l2++;
+                    else if (sum > target) h2--;
+                    else {
+                        output.add(Arrays.asList(new Integer[]{nums[l1], nums[l2], nums[h2], nums[h1]}));
+                        l2++;
+                    }
+                }
+
+            }
+        }
+
+        return output;
+    }
+
+
+    /// https://leetcode.com/problems/letter-combinations-of-a-phone-number/
+    private static List<String> letterCombinations(String digits) {
+        LinkedList<String> ans = new LinkedList<String>();
+        if(digits.isEmpty()) return ans;
+        String[] mapping = new String[] {"0", "1", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        ans.add("");
+        for(int i =0; i<digits.length();i++){
+            int x = Character.getNumericValue(digits.charAt(i));
+            while(ans.peek().length()==i){
+                String t = ans.remove();
+                for(char s : mapping[x].toCharArray())
+                    ans.add(t+s);
+            }
+        }
+        return ans;
+    }
+
+    private static List<String> letterCombinations2(String digits) {
+        LinkedList<String> ans = new LinkedList<String>();
+        if(digits.isEmpty()) return ans;
+        String[] mapping = new String[] {"0", "1", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        ans.add("");
+
+        for(int i =0; i<digits.length();i++){
+            int x = Character.getNumericValue(digits.charAt(i));
+            int len = ans.size();
+            for (int j = 0; j < len; j++) {
+                for(char s : mapping[x].toCharArray()){
+                    ans.add(ans.get(0)+s);
+                }
+                ans.remove(0);
+            }
+
+        }
+        return ans;
     }
 
     /// https://leetcode.com/problems/string-to-integer-atoi/
@@ -499,6 +607,11 @@ public class MediumMain {
         int val;
         ListNode next;
         ListNode(int x) { val = x; }
+
+        @Override
+        public String toString() {
+            return val +" > " + next ;
+        }
     }
 
     private static ListNode createLinkedList(int[] nodeValues){
