@@ -11,8 +11,7 @@ public class MediumMain {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
 
-        ListNode head = createLinkedList(new int[]{1,2,3,4,5});
-        Object output = swapPairs(head);
+        int output = divide(Integer.MIN_VALUE,-1);
         System.out.println("Answer="+output);
 
 
@@ -20,8 +19,37 @@ public class MediumMain {
         System.out.println("END");
     }
 
+
+    /// https://leetcode.com/problems/divide-two-integers/
+    private static int divide(int dividend, int divisor) {
+        if (dividend == 0) return 0;
+        if (divisor == 1) return dividend;
+        boolean isNeg = false;
+        if (dividend < 0){
+            isNeg = !isNeg;
+            dividend = 0-dividend;
+        }
+        if (divisor < 0){
+            isNeg = !isNeg;
+            divisor = 0-divisor;
+        }
+        int i = 0;
+        while (dividend - divisor >= 0){
+            dividend = dividend - divisor;
+            if (isNeg){
+                if (Integer.MIN_VALUE+1 < i) i++;
+                else return Integer.MIN_VALUE;
+            }else{
+                if (Integer.MAX_VALUE-1 >= i)i++;
+                else return Integer.MAX_VALUE;
+            }
+        }
+        return isNeg ? 0-i : i;
+    }
+
+
     /// https://leetcode.com/problems/swap-nodes-in-pairs/
-    private static ListNode swapPairs(ListNode head) {
+    private static ListNode swapPairs(ListNode head) { //TODO
         if (head == null || head.next == null) return head;
         ListNode first = head;
         ListNode prevHead = head;
