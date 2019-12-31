@@ -11,12 +11,188 @@ public class MediumMain {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
 
-        int output = divide(Integer.MIN_VALUE,-1);
+        Object output = searchRange(new int[]{1,1,1,2,2,3,5,7,7,8,8,10}, 8);
+//        Object output = searchRange(new int[]{1,4,5}, 4);
         System.out.println("Answer="+output);
-
-
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
+
+    /// https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+    private static int[] searchRange(int[] nums, int target) {
+        int[] output = new int[]{-1,-1};
+        if (nums == null || nums.length == 0 || target < nums[0] || target > nums[nums.length-1]) return output;
+        if (nums.length == 1){
+            if (target == nums[0]) return new int[]{0,0};
+            else return output;
+        }
+        int i = 0, j = nums.length-1;
+        int mid = -1;
+        ///lower bound
+        while (i < j){
+            mid = (i+j)/2;
+            if (nums[mid] < target){
+                i = mid+1;
+            }else if (nums[mid] > target || nums[mid] == target){
+                j = mid;
+            }
+        }
+        if (nums[i] == target) output[0]=i;
+        else return output;
+        i = 0; j = nums.length-1;
+        mid = -1;
+        ///upper bound
+        while (i < j){
+            mid = (i+j)/2;
+            if (nums[mid] < target || nums[mid] == target){
+                i = mid+1;
+            }else if (nums[mid] > target){
+                j = mid;
+            }
+        }
+        if (nums[i] == target) output[1] = i;
+        else if (i > 0 && nums[i-1] == target) output[1] = i-1;
+        else  return new int[]{-1,-1};
+        return output;
+    }
+
+    /// https://leetcode.com/problems/combination-sum/
+    private static List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> output = new ArrayList<>();
+        if (candidates == null || candidates.length == 0) return output;
+        Arrays.sort(candidates);
+        helper(candidates, target, 0, new ArrayList<Integer>(), output);
+        return output;
+    }
+
+    private static void helper(int[] candidates, int target, int idx, List<Integer> tempList, List<List<Integer>> output){
+        if (target == 0){
+            output.add(new ArrayList<>(tempList));
+        }else if (target > 0){
+            for (int i = idx; i < candidates.length; i++) {
+                tempList.add(candidates[i]);
+                helper(candidates, target-candidates[i], i, tempList, output);
+                tempList.remove(tempList.size()-1); //removing last element
+            }
+        }
+    }
+
+    private static void testIsValidSudoku(){
+        char[][] board = new char[][]{
+                {'5','3','.','.','7','.','.','.','.'},
+                {'6','.','.','1','9','5','.','.','.'},
+                {'.','9','8','.','.','.','.','6','.'},
+                {'8','.','.','.','6','.','.','.','3'},
+                {'4','.','.','8','.','3','.','.','1'},
+                {'7','.','.','.','2','.','.','.','6'},
+                {'.','6','.','.','.','.','2','8','.'},
+                {'.','.','.','4','1','9','.','.','5'},
+                {'.','.','.','.','8','.','.','7','9'}
+        };
+        char[][] board2 = new char[][]{
+                {'8','3','.','.','7','.','.','.','.'},
+                {'6','.','.','1','9','5','.','.','.'},
+                {'.','9','8','.','.','.','.','6','.'},
+                {'8','.','.','.','6','.','.','.','3'},
+                {'4','.','.','8','.','3','.','.','1'},
+                {'7','.','.','.','2','.','.','.','6'},
+                {'.','6','.','.','.','.','2','8','.'},
+                {'.','.','.','4','1','9','.','.','5'},
+                {'.','.','.','.','8','.','.','7','9'}
+        };
+        char[][] board3 = new char[][]{
+                {'.','.','4','.','.','.','6','3','.'},
+                {'.','.','.','.','.','.','.','.','.'},
+                {'5','.','.','.','.','.','.','9','.'},
+                {'.','.','.','5','6','.','.','.','.'},
+                {'4','.','3','.','.','.','.','.','1'},
+                {'.','.','.','7','.','.','.','.','.'},
+                {'.','.','.','5','.','.','.','.','.'},
+                {'.','.','.','.','.','.','.','.','.'},
+                {'.','.','.','.','.','.','.','.','.'}};
+        boolean output = isValidSudoku(board3);
+    }
+    /// https://leetcode.com/problems/valid-sudoku/
+    private static boolean isValidSudoku(char[][] board) {
+        if (board == null || board.length != 9 || board[0].length != 9) return false;
+        for (int i = 0; i < board.length; i++) {
+            HashSet<Character> colSet = new HashSet();
+            for (int j = 0; j < board[0].length; j++) {
+                char x = board[j][i];
+                if ('.' == x) continue;
+                else if (colSet.contains(x)) return false;
+                else colSet.add(x);
+            }
+        }
+        for (int i = 0; i < board.length; i++) {
+            HashSet<Character> rowSet = new HashSet();
+            for (int j = 0; j < board[0].length; j++) {
+                char x = board[i][j];
+                if ('.' == x) continue;
+                else if (rowSet.contains(x)) return false;
+                else rowSet.add(x);
+            }
+        }
+        for (int i=0; i < 9 ; i = i+3) {
+            for (int j = 0; j < 9; j = j+3) {
+                ///validating every group
+                HashSet<Character> blockSet = new HashSet();
+                for (int m = i; m < i+3; m++) {
+                    for (int n = j; n < j+3; n++) {
+                        char x = board[m][n];
+                        if ('.' == x) continue;
+                        else if (blockSet.contains(x)) return false;
+                        else blockSet.add(x);
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+
+
+    /// https://leetcode.com/problems/search-in-rotated-sorted-array/
+    private static int search(int[] nums, int target) {
+        if (nums == null || nums.length == 0) return -1;
+        int i = 0, j = nums.length - 1;
+        int mid = 0;
+        int pivot = 0;
+        while (i < j) {
+            mid = (i + j) / 2;
+            if (nums[mid] > nums[j]) i = mid + 1;
+            else j = mid;
+        }
+        pivot = i;
+        if (target < nums[pivot] || (pivot > 0 && target > nums[pivot-1])) return -1; ///out of range
+
+        if (target == nums[pivot]) return pivot;
+        else if (target >= nums[0] && (pivot > 0 && target <= nums[pivot-1])) {
+            i = 0;
+            j = pivot-1;
+        } else {
+            i = pivot+1;
+            j = nums.length-1;
+        }
+            while (i <= j) {
+                mid = (i + j) / 2;
+                if (nums[mid] == target) return mid;
+                else if (nums[mid] < target) i = mid + 1;
+                else j = mid;
+            }
+
+            return -1;
+    }
+
+    private static int solution(int[] A) {
+        // write your code in Java SE 8
+        if (A == null || A.length == 0) return 0;
+        int output = 1;
+        for(int i=0; i<A.length; i++){
+            if (A[i] == 0) return 0;
+            else if (A[i] < 0) output = -1*output;
+        }
+        return output;
     }
 
 
