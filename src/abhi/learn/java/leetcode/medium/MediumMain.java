@@ -11,11 +11,279 @@ public class MediumMain {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
 
-        Object output = searchRange(new int[]{1,1,1,2,2,3,5,7,7,8,8,10}, 8);
-//        Object output = searchRange(new int[]{1,4,5}, 4);
+        int[][] input = new int[][]{
+                {1, 2, 3, 4,40},
+                {5, 6, 7, 8,80},
+                {9,10,11,12,120}
+        };
+        String output = multiply_2("123", "456");
+
+
+//        Object output = combinationSum2(new int[]{2,5,2,1,2}, 5);
         System.out.println("Answer="+output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
+
+    /// https://leetcode.com/problems/multiply-strings/
+    private static String multiply_2(String num1, String num2) {
+        if (num1 == null || "".equals(num1) || num2 == null || "".equals(num2))
+            return "";
+        char[] result = new char[num1.length()+num2.length()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = '0';
+        }
+        int carry = 0;
+        for (int i = num1.length()-1; i >=0 ; i--) {
+            char c1 = num1.charAt(i);
+            for (int j = num2.length()-1; j >=0 ; j--) {
+                char c2 = num2.charAt(j);
+                int multi = (c1-'0')*(c2-'0') + (result[i+j+1]-'0') + carry;
+                carry = multi/10;
+                multi = multi%10;
+                result[i+j+1] = (char)(multi+'0');
+            }
+        }
+        //find the first non-zero digit
+        int start = -1;
+        for (int i = 0; i < result.length; i++) {
+            if (result[i] != '0'){
+                start = i;
+                break;
+            }
+        }
+        return start == -1 ? "0" : new String(result,start, result.length-start);
+    }
+
+    /// https://leetcode.com/problems/multiply-strings/
+    private static String multiply(String num1, String num2) {
+        if (num1 == null || "".equals(num1) || num2 == null || "".equals(num2))
+            return "";
+        List<String> additions = new ArrayList<>();
+        for (int i = 0; i < num1.length(); i++) {
+            char n1 = num1.charAt(num1.length() -1 -i);
+            StringBuilder oneMultiplication = new StringBuilder(num1.length()+num2.length());
+            char carry = '0';
+            for (int j = 0; j < num2.length(); j++) {
+                char n2 = num2.charAt(num2.length()-1-j);
+
+                char[] res = multiply( n1, n2, carry);
+                carry = res[1];
+                oneMultiplication.insert(0,res[0]);
+            }
+            if ( carry != '0')oneMultiplication.insert(0,carry);
+            for (int zeros = 0; zeros < i; zeros++) { ///every next row will have to multipled by 10
+                oneMultiplication.append('0');
+            }
+            additions.add(oneMultiplication.toString());
+        }
+        StringBuilder addition = new StringBuilder();
+        for (String number: additions) {
+            StringBuilder sbTemp = new StringBuilder(number.length()+addition.length());
+            char carry = '0';
+            for (int i = 0; i < number.length(); i++) {
+                char c1 = number.charAt(number.length()-1-i);
+                char c2 = addition.length()-i-1 >= 0 ? addition.charAt(addition.length()-1-i) : '0';
+                char[] res = addition(c1,c2, carry);
+                carry = res[1];
+                sbTemp.insert(0, res[0]);
+            }
+            if (carry != '0') sbTemp.insert(0, carry);
+
+            addition.replace(0, addition.length(), sbTemp.toString());
+        }
+        for (int i = 0; i < addition.length(); i++) {
+            if (addition.charAt(i) == '0'){
+                continue;
+            }else {
+                return addition.substring(i, addition.length());
+            }
+        }
+        return "0";
+    }
+    private static char[] addition(char c1, char c2, char carry) {
+        int x = c1-48;
+        int y = c2-48;
+        int add = (x+y) + ((int)carry-48);
+        return  new char[]{(char)(48+ add%10), (char)(48 + add/10)};
+    }
+    private static char[] multiply(char c1, char c2, char carry) {
+        int x = c1-48;
+        int y = c2-48;
+        int m = (x*y) + ((int)carry-48);
+        return  new char[]{(char)(48+ m%10), (char)(48 + m/10)};
+    }
+
+    /// https://leetcode.com/problems/spiral-matrix/
+    private static List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> output = new ArrayList<>();
+        if (matrix == null || matrix.length == 0) return output;
+        int row = 0; int col = 0;
+        HashSet<String> visited = new HashSet<>();
+        int total = matrix.length*matrix[0].length;
+        char dir = 'R';
+
+        visited.add(""+row+col);
+        output.add(matrix[row][col]);
+        boolean toAdd = false;
+        while (visited.size() <  total){
+            switch (dir){
+                case 'R':{
+                    if (col < matrix[0].length-1 && !visited.contains(""+row+(col+1)) ){
+                        col++; toAdd=true;
+                    }else {
+                        dir = 'D';
+                    }
+                    break;
+                }
+                case 'D':{
+                    if (row < matrix.length-1 && !visited.contains(""+(row+1)+col)){
+                        row++; toAdd=true;
+                    }else {
+                        dir = 'L';
+                    }
+                    break;
+                }
+                case 'L':{
+                    if (col > 0 && !visited.contains(""+row+(col-1))){
+                        col--; toAdd=true;
+                    }else {
+                        dir = 'U';
+                    }
+                    break;
+                }
+                case 'U':{
+                    if (row > 0 && !visited.contains(""+(row-1)+col)){
+                        row--; toAdd=true;
+                    }else {
+                        dir = 'R';
+                    }
+                    break;
+                }
+            }
+            if (toAdd){
+                output.add(matrix[row][col]);
+                visited.add(""+row+col);
+            }
+            toAdd=false;
+        }
+        return output;
+    }
+
+
+    /// https://leetcode.com/problems/sort-colors/
+    private static void sortColors(int[] nums) {
+        int zeros = 0;
+        int ones = 0;
+        int twos = nums.length-1;
+        for (int i = 0; i < nums.length; ) {
+            int x = nums[i];
+            switch (x){
+                case 0:{
+                    if (i <= zeros){//at the right place
+                        i++;
+                    }else {
+                        nums[i] = nums[zeros];
+                        nums[zeros] = x;
+                        zeros++;
+                        if (zeros>=ones)ones++;
+                    }
+                    break;
+                }
+                case 1:{
+                    if (ones<=i && i<=twos){
+                        i++;
+                    }else {
+                        nums[i] = nums[ones];
+                        nums[ones] = x;
+                        ones++;
+                    }
+                    break;
+                }
+                case 2:{
+                    if (twos<=i && i<=nums.length){
+                        i++;
+                    }else {
+                        nums[i] = nums[twos];
+                        nums[twos] = x;
+                        twos--;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    /// https://leetcode.com/problems/combination-sum-ii/
+    private static List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> output = new ArrayList<>();
+        if (candidates == null || candidates.length == 0) return output;
+
+        Arrays.sort(candidates);
+        Map<Integer, List<Integer>> map = new HashMap<Integer, List<Integer>>();
+        helperCombinationSum2(candidates, target, 0, new ArrayList<Integer>(), map);
+        output.addAll(map.values());
+        return output;
+    }
+
+    private static void helperCombinationSum2(int[] candidates, int target, int idx, List<Integer> temp,  Map<Integer, List<Integer>> output){
+        if (target == 0){
+            int key = 1;
+            for (int k: temp) {
+                key *= k;
+            }
+            output.put(key, new ArrayList<>(temp));
+        }else if (target > 0){
+            for (int i = idx; i < candidates.length; i++) {
+                if (i != candidates.length -1 && candidates[i] == candidates[i+1]) continue;
+                if(temp.add(candidates[i]))
+                    helperCombinationSum2(candidates, target-candidates[i], idx+1, temp, output);
+                else continue;
+                temp.remove(temp.size()-1);
+            }
+        }else{
+
+        }
+    }
+
+
+    /// https://leetcode.com/problems/search-in-rotated-sorted-array/
+    private static int search(int[] nums, int target) {
+        if (nums == null || nums.length == 0) return -1;
+        int i = 0, j = nums.length - 1;
+        int mid = 0;
+        int pivot = 0;
+
+        while (i<j){
+            mid = (i+j)/2;
+            if (mid < nums.length-1 && nums[mid] > nums[mid+1]){
+                pivot = mid+1;
+                break;
+            }else if (nums[mid] > nums[0]){
+                i=mid+1;
+            }else{
+                j = mid-1;
+            }
+        }
+
+        if (target < nums[pivot] || (pivot > 0 && target > nums[pivot-1]))
+            return -1;
+        if (pivot == 0){
+            i = 0; j = nums.length - 1;
+        } else if (nums[0] <= target && target <= nums[pivot-1]){
+            i = 0; j = pivot - 1;
+        } else {
+            i = pivot; j = nums.length - 1;
+        }
+
+        while (i < j){
+            mid = (i+j)/2;
+            if (nums[mid] == target) return mid;
+            else if (nums[mid] < target) i = mid+1;
+            else j = mid;
+        }
+
+        return -1;
     }
 
     /// https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
@@ -148,40 +416,6 @@ public class MediumMain {
             }
         }
         return true;
-    }
-
-
-
-    /// https://leetcode.com/problems/search-in-rotated-sorted-array/
-    private static int search(int[] nums, int target) {
-        if (nums == null || nums.length == 0) return -1;
-        int i = 0, j = nums.length - 1;
-        int mid = 0;
-        int pivot = 0;
-        while (i < j) {
-            mid = (i + j) / 2;
-            if (nums[mid] > nums[j]) i = mid + 1;
-            else j = mid;
-        }
-        pivot = i;
-        if (target < nums[pivot] || (pivot > 0 && target > nums[pivot-1])) return -1; ///out of range
-
-        if (target == nums[pivot]) return pivot;
-        else if (target >= nums[0] && (pivot > 0 && target <= nums[pivot-1])) {
-            i = 0;
-            j = pivot-1;
-        } else {
-            i = pivot+1;
-            j = nums.length-1;
-        }
-            while (i <= j) {
-                mid = (i + j) / 2;
-                if (nums[mid] == target) return mid;
-                else if (nums[mid] < target) i = mid + 1;
-                else j = mid;
-            }
-
-            return -1;
     }
 
     private static int solution(int[] A) {
