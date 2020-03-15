@@ -1,6 +1,9 @@
 package abhi.learn.java.leetcode.medium;
 
+import org.omg.PortableInterceptor.INACTIVE;
+
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Abhishek on 3/14/2019.
@@ -11,18 +14,265 @@ public class MediumMain {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
 
-        int[][] input = new int[][]{
-                {1, 2, 3, 4,40},
-                {5, 6, 7, 8,80},
-                {9,10,11,12,120}
-        };
-        String output = multiply_2("123", "456");
 
-
-//        Object output = combinationSum2(new int[]{2,5,2,1,2}, 5);
+//        Object output = merge(new int[][]{{1,3},{2,6},{8,10},{15,18}});
+//        Object output = merge(new int[][]{{2,3},{4,5},{6,7},{8,9},{1,10}});
+        Object output = getPermutation(3,1);
         System.out.println("Answer="+output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
+
+    /// https://leetcode.com/problems/permutation-sequence/
+    private static String getPermutation(int n, int k) {
+        List<String> allPermutations = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        getPermutation(n, 0,allPermutations, sb);
+        return "";
+    }
+
+    private static void getPermutation(int n, int start, List<String> allPermutations, StringBuilder sb) {
+        if (sb.length() == n){
+            allPermutations.add(sb.toString());
+        }else{
+            for (int i = start; i <= n; i++) {
+                sb.append(i);
+                getPermutation(n, 1, allPermutations,sb);
+                sb.deleteCharAt(sb.length()-1);
+            }
+        }
+    }
+
+
+    /// https://leetcode.com/problems/spiral-matrix-ii/
+    private static int[][] generateMatrix(int n) {
+        if(n < 0) return null;
+        int[][] output = new int[n][n];
+        int x=0,y=0;
+        char dir = 'R';
+        for (int i = 1; i <= n*n; i++) {
+            output[x][y] = i;
+            switch (dir){
+                case 'R' :{
+                    if (y+1 < n && output[x][y+1] == 0){y++; break;}
+                    else {x++;dir='D';break;}
+                }
+                case 'D' :{
+                    if (x+1 < n && output[x+1][y] == 0){x++;; break;}
+                    else{y--;dir='L';break;}
+                }
+                case 'L' :{
+                    if (y>0 && output[x][y-1] == 0){y--;; break;}
+                    else {x--;dir='U';break;}
+                }
+                case 'U' :{
+                    if (x > 0 && output[x-1][y] == 0){x--;; break;}
+                    else {y++;dir='R';break;}
+                }
+            }
+        }
+        return output;
+    }
+
+
+    /// https://leetcode.com/problems/merge-intervals/
+    private static int[][] merge(int[][] intervals) { /// TODO
+        if (intervals == null || intervals.length <= 1) return intervals;
+
+        List<int[]> list = Arrays.asList(intervals).stream().sorted(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[0] <= o2[0] ? -1 : 1;
+            }
+        }).collect(Collectors.toList());
+//        int[] range
+        for (int i = 1; i < list.size(); i++) {
+            
+        }
+        int[][] output = new int[list.size()][];
+        return output;
+    }
+
+    /// https://leetcode.com/problems/powx-n/
+    public double myPow(double x, int n) {
+        if (x == 0.0) return x;
+        if (n == 0) return 1;
+        if (n == 1) return x;
+        double output = 1;
+        boolean neg = n < 0 ? true : false;
+        n = n < 0 ? -1*n : n;
+        for (int i = 1; i <= n; i++) {
+            output = output*x;
+        }
+        if (neg) output = (1d/output);
+        return output;
+    }
+
+
+    /// https://leetcode.com/problems/group-anagrams/
+    private static List<List<String>> groupAnagrams(String[] strs) {
+        List<List<String>> output = new ArrayList<>();
+        if (strs == null || strs.length == 0) return output;
+
+        HashMap<Integer, List<String>> grouped = new HashMap<>();
+        for (int i = 0; i < strs.length; i++) {
+            if(grouped.get(strs[i].length()) == null){
+                grouped.put(strs[i].length(), new ArrayList<>());
+            }
+            grouped.get(strs[i].length()).add(strs[i]);
+        }
+
+        HashMap<String, List<String>> anagrams = new HashMap<>();
+        for (Integer length: grouped.keySet()) {
+            String current = "";
+            List<String> list = grouped.get(length);
+            for (String word: list) {
+                if ("".equals(current)){
+                    current = word;
+                    continue;
+                }
+
+            }
+        }
+
+        return output;
+    }
+
+    private static boolean isAnagram2(String s, String t) {
+        if (s == null || t == null || s.length() != t.length())
+            return false;
+
+        int[] counts = new int[26];
+        for (int i = 0; i < s.length(); i++) {
+            counts[s.charAt(i)-'a']++;
+            counts[t.charAt(i)-'a']--;
+        }
+        for (int i = 0; i < counts.length; i++) {
+            if (counts[i] != 0) return false;
+        }
+        return true;
+    }
+
+
+    /// https://leetcode.com/problems/permutations-ii/   TODO
+    private static  List<List<Integer>> permuteUnique(int[] nums) {
+        List<List<Integer>> output = new ArrayList<>();
+        Arrays.sort(nums);
+        boolean[] used = new boolean[nums.length];
+        permuteUniqueHelper(nums, used, new ArrayList<Integer>(), output);
+        return output;
+    }
+
+    private static void permuteUniqueHelper(int[] nums, boolean[] used, List<Integer> tempList, List<List<Integer>> output) {
+        if (tempList.size() == nums.length){
+            output.add(new ArrayList<>(tempList));
+            return;
+        }else if (tempList.size() > nums.length){
+            return;
+        }else {
+            for (int i = 0; i < nums.length; i++) {
+                if (used[i]) continue;
+                tempList.add(nums[i]);
+                used[i] = true;
+                permuteUniqueHelper(nums, new boolean[nums.length], tempList, output);
+                used[i] = false;
+                tempList.remove(tempList.size()-1);
+            }
+        }
+    }
+
+    /// https://leetcode.com/problems/combination-sum-ii/
+    private static List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> output = new ArrayList<>();
+        if (candidates == null || candidates.length == 0) return output;
+        Arrays.sort(candidates);
+        helperCombinationSum(candidates, target, 0, new ArrayList<Integer>(), output, new HashSet<String>());
+        return output;
+    }
+
+    private static void helperCombinationSum(int[] candidates, int target, int idx, List<Integer> temp,  List<List<Integer>> output, HashSet<String> keys){
+        if (target == 0){
+            String key = "";
+            for (int k: temp) {
+                key = k+key;
+            }
+            if (keys.add(key))
+                output.add(new ArrayList<>(temp));
+            return;
+        }else if(target < 0){
+            return;
+        }else {
+            for (int i = idx; i < candidates.length; i++) {
+                temp.add(candidates[i]);
+                helperCombinationSum(candidates, target-candidates[i], i+1, temp, output, keys);
+                temp.remove(temp.size()-1);
+            }
+        }
+    }
+
+
+    private static void helperCombinationSum2(int[] candidates, int target, int idx, List<Integer> temp,  Map<Integer, List<Integer>> output){
+        if (target == 0){
+            int key = 1;
+            for (int k: temp) {
+                key *= k;
+            }
+            output.put(key, new ArrayList<>(temp));
+        }else if (target > 0){
+            for (int i = idx; i < candidates.length; i++) {
+                if (i == idx) continue;
+                if(temp.add(candidates[i]))
+                    helperCombinationSum2(candidates, target-candidates[i], idx+1, temp, output);
+                else continue;
+                temp.remove(temp.size()-1);
+            }
+        }else{
+
+        }
+    }
+
+    /// https://leetcode.com/problems/rotate-image/
+    private static void rotate_2(int[][] matrix) {
+        if (matrix == null || matrix.length==0) return;
+        int height = matrix.length;
+        for (int row = 0; row < (height+1)/2; row++) {
+            for (int col = 0; col < height/2; col++) {
+                int temp = matrix[height-1-col][row];
+                matrix[height-1-col][row] = matrix[height-1-row][height-1-col];
+                matrix[height-1-row][height-1-col] = matrix[col][height-1-row];
+                matrix[col][height-1-row] = matrix[row][col];
+                matrix[row][col] = temp;
+            }
+        }
+    }
+
+    /// https://leetcode.com/problems/rotate-image/
+    private static void rotate(int[][] matrix) {
+        if (matrix == null || matrix.length==0) return;
+        int height = matrix.length-1;
+        HashSet<String> visited = new HashSet<>();
+        int row, col;
+        for (int i = 0; i < (height+1)/2; i++) {
+            for (int j = 0; j < height/2; j++) {
+                if (visited.contains(""+i+"_"+j)) continue; //this has been replaced.
+                boolean done = false;
+                row = i; col = j;
+                int mem = matrix[row][col];
+                while (!done){//calculate new position
+                    int temp1 = row; int temp2 = col;
+                    //new positions for the element at i,j
+                    row = temp2;
+                    col = height - temp1;
+                    if (visited.contains(""+row+"_"+col)) {done=true;}
+                    else{
+                        int tempValue = matrix[row][col];
+                        matrix[row][col] = mem;
+                        mem = tempValue;
+                        visited.add(""+row+"_"+col);
+                    }
+                }//while
+            }
+        }
     }
 
     /// https://leetcode.com/problems/multiply-strings/
@@ -213,39 +463,6 @@ public class MediumMain {
             }
         }
     }
-
-    /// https://leetcode.com/problems/combination-sum-ii/
-    private static List<List<Integer>> combinationSum2(int[] candidates, int target) {
-        List<List<Integer>> output = new ArrayList<>();
-        if (candidates == null || candidates.length == 0) return output;
-
-        Arrays.sort(candidates);
-        Map<Integer, List<Integer>> map = new HashMap<Integer, List<Integer>>();
-        helperCombinationSum2(candidates, target, 0, new ArrayList<Integer>(), map);
-        output.addAll(map.values());
-        return output;
-    }
-
-    private static void helperCombinationSum2(int[] candidates, int target, int idx, List<Integer> temp,  Map<Integer, List<Integer>> output){
-        if (target == 0){
-            int key = 1;
-            for (int k: temp) {
-                key *= k;
-            }
-            output.put(key, new ArrayList<>(temp));
-        }else if (target > 0){
-            for (int i = idx; i < candidates.length; i++) {
-                if (i != candidates.length -1 && candidates[i] == candidates[i+1]) continue;
-                if(temp.add(candidates[i]))
-                    helperCombinationSum2(candidates, target-candidates[i], idx+1, temp, output);
-                else continue;
-                temp.remove(temp.size()-1);
-            }
-        }else{
-
-        }
-    }
-
 
     /// https://leetcode.com/problems/search-in-rotated-sorted-array/
     private static int search(int[] nums, int target) {

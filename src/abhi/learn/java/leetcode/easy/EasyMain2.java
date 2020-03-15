@@ -16,10 +16,47 @@ public class EasyMain2 {
 //        int[][] matrix = new int[][]{{1,4,7,11,15},{2,5,8,12,19},{3,6,9,16,22},{10,13,14,17,24},{18,21,23,26,30}};
 //        int[][] matrix = new int[][]{{1,3,5,7,9},{2,4,6,8,10},{11,13,15,17,19},{12,14,16,18,20},{21,22,23,24,25}};
         int[][] matrix = new int[][]{{-1,3}};
-        Object output = binarySearchArray2(new int[]{1,2,3}, 1);
+        Object output = isAnagram2("anagram",
+                "aganram");
         System.out.println("output = " + output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
+
+    ///https://leetcode.com/problems/valid-anagram/
+    private static boolean isAnagram(String s, String t) {
+        if (s == null || t == null || s.length() != t.length())
+            return false;
+
+        HashMap<Character, Integer> first = new HashMap<>();
+        HashMap<Character, Integer> second = new HashMap<>();
+
+        for (int i = 0; i < s.length(); i++) {
+            first.put(s.charAt(i), 1+first.getOrDefault(s.charAt(i),0));
+            second.put(t.charAt(i), 1+second.getOrDefault(t.charAt(i),0));
+        }
+        if (first.size() != second.size()) return false;
+
+        for (Character x: first.keySet()) {
+            if (!first.get(x).equals(second.get(x))) return false;
+        }
+        return true;
+    }
+
+    ///https://leetcode.com/problems/valid-anagram/
+    private static boolean isAnagram2(String s, String t) {
+        if (s == null || t == null || s.length() != t.length())
+            return false;
+
+        int[] counts = new int[26];
+        for (int i = 0; i < s.length(); i++) {
+            counts[s.charAt(i)-'a']++;
+            counts[t.charAt(i)-'a']--;
+        }
+        for (int i = 0; i < counts.length; i++) {
+            if (counts[i] != 0) return false;
+        }
+        return true;
     }
 
     private static int binarySearchArray2(int[] nums, int target){

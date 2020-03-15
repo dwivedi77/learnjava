@@ -1,19 +1,33 @@
 package abhi.learn.java.leetcode.easy;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Created by abhi on 1/27/2019.
  */
 public class EasyMain {
 
+    private static final char sap = 0x20;
+    private static final int msg = 1;
+
     public static void main(String[] args) {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
-        int answer = reverse(1534236469);
-
-        System.out.println("Answer="+answer);
+//        int a = 1<<2;
+//        int b = a++;
+//        int c = ++b;
+//        System.out.println("Answer="+a);
+//        System.out.println(sap+msg+"=A");
+        List<String> list = Arrays.asList(new String[]{"ab","cb","sd","aaa0","aaaa","ab","cb","sd","aaa0","aaaa","ab","cb","sd","aaa0","aaaa","ab","cb","sd","aaa0","aaaa"});
+//        String concat = "";
+        StringBuilder sb = new StringBuilder();
+        for (String s: list) {
+            sb.append(s);
+        }
+        System.out.println(sb.toString());
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
     }
