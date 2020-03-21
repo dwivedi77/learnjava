@@ -14,13 +14,84 @@ public class MediumMain {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
 
-
-//        Object output = merge(new int[][]{{1,3},{2,6},{8,10},{15,18}});
-//        Object output = merge(new int[][]{{2,3},{4,5},{6,7},{8,9},{1,10}});
-        Object output = uniquePaths(51,9);
+//        int[][] metric = new int[][]{{1,3,1},{1,5,1},{4,2,1}};
+        int[][] metric = new int[][]{{7,1,3,5,8,9,9,2,1,9,0,8,3,1,6,6,9,5},{9,5,9,4,0,4,8,8,9,5,7,3,6,6,6,9,1,6},{8,2,9,1,3,1,9,7,2,5,3,1,2,4,8,2,8,8},{6,7,9,8,4,8,3,0,4,0,9,6,6,0,0,5,1,4},{7,1,3,1,8,8,3,1,2,1,5,0,2,1,9,1,1,4},{9,5,4,3,5,6,1,3,6,4,9,7,0,8,0,3,9,9},{1,4,2,5,8,7,7,0,0,7,1,2,1,2,7,7,7,4},{3,9,7,9,5,8,9,5,6,9,8,8,0,1,4,2,8,2},{1,5,2,2,2,5,6,3,9,3,1,7,9,6,8,6,8,3},{5,7,8,3,8,8,3,9,9,8,1,9,2,5,4,7,7,7},{2,3,2,4,8,5,1,7,2,9,5,2,4,2,9,2,8,7},{0,1,6,1,1,0,0,6,5,4,3,4,3,7,9,6,1,9}};
+        Object output = minPathSum(metric);
         System.out.println("Answer="+output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
+
+    /// https://leetcode.com/problems/minimum-path-sum/
+    private static int minPathSum2(int[][] grid) {
+        boolean[][] visited = new boolean[grid.length][grid[0].length];
+        return minPathSum2(grid, grid.length-1, grid[0].length-1, visited);
+    }
+    private static int minPathSum2(int[][] grid, int row, int col, boolean[][] visited) {
+        if (row == 0 && col == 0) return grid[0][0];
+
+        if (visited[row][col]){
+            return grid[row][col];
+        }else{
+            visited[row][col] = true;
+            if (row == 0){
+                grid[row][col] = grid[row][col]+ minPathSum2(grid, row, col-1, visited);
+            }else if (col == 0){
+                grid[row][col] = grid[row][col]+ minPathSum2(grid, row-1, col, visited);
+            }else {
+                grid[row][col] = grid[row][col]+ Math.min(minPathSum2(grid, row, col-1, visited), minPathSum2(grid, row-1, col, visited));
+            }
+            return grid[row][col];
+        }
+    }
+
+    /// https://leetcode.com/problems/minimum-path-sum/
+    private static int minPathSum(int[][] grid) {
+        List<Integer> totals = new ArrayList<>();
+        minPathSum(grid, 0, 0, 0, totals);
+        int mininum = totals.get(0);
+        for (Integer path: totals) {
+            if (path < mininum)
+                mininum = path;
+        }
+        return mininum;
+    }
+
+    private static void minPathSum(int[][] grid, int row, int col, int prevPath, List<Integer> total) {
+        if (row == grid.length-1 && col == grid[0].length-1){
+            total.add(grid[row][col]+prevPath);
+            return;
+        }
+        if (row < grid.length-1){
+            minPathSum(grid, row+1, col, prevPath+grid[row][col], total);
+        }
+        if (col < grid[0].length-1){
+            minPathSum(grid, row, col+1, prevPath+grid[row][col], total);
+        }
+    }
+
+
+    /// https://leetcode.com/problems/unique-paths-ii/
+    private static int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        int m = obstacleGrid.length; int n = obstacleGrid[0].length;
+        if (obstacleGrid[0][0] == 1) return 0; // if robot can not start then it can reach no where. :)
+        boolean obstacle = false;
+        for (int i = 1; i < n; i++) {
+            if (obstacleGrid[0][i] == 1) {obstacleGrid[0][i] = 0; obstacle=true;}
+            else obstacleGrid[0][i] = obstacle ? 0 : 1;
+        }
+        obstacle = false;
+        for (int i = 0; i < m; i++) {
+            if (obstacleGrid[i][0] == 1) {obstacleGrid[i][0] = 0; obstacle=true;}
+            else obstacleGrid[i][0] = obstacle ? 0 : 1;
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                if(obstacleGrid[i][j] == 1) obstacleGrid[i][j] = 0;
+                else obstacleGrid[i][j] = obstacleGrid[i-1][j] + obstacleGrid[i][j-1];
+            }
+        }
+        return obstacleGrid[m-1][n-1];
     }
 
     /// https://leetcode.com/problems/unique-paths/
@@ -38,6 +109,20 @@ public class MediumMain {
             visited.put(key, count);
         }
         return visited.get(key);
+    }
+
+    private static int uniquePaths2(int m, int n) {
+        int[][] metrix = new int[m][n];
+        Arrays.fill(metrix[0], 1);
+        for (int i = 0; i < m; i++) {
+            metrix[i][0] = 1;
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                metrix[i][j] = metrix[i][j-1] + metrix[i-1][j];
+            }
+        }
+        return metrix[m-1][n-1];
     }
 
     /// https://leetcode.com/problems/permutation-sequence/
