@@ -1,8 +1,11 @@
 package abhi.learn.java.leetcode.medium;
 
-import org.omg.PortableInterceptor.INACTIVE;
+
+import abhi.learn.java.leetcode.datastructure.*;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -13,37 +16,1323 @@ public class MediumMain {
     public static void main(String[] args) {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
-
-//        int[][] metric = new int[][]{{1,3,1},{1,5,1},{4,2,1}};
-        int[][] metric = new int[][]{{7,1,3,5,8,9,9,2,1,9,0,8,3,1,6,6,9,5},{9,5,9,4,0,4,8,8,9,5,7,3,6,6,6,9,1,6},{8,2,9,1,3,1,9,7,2,5,3,1,2,4,8,2,8,8},{6,7,9,8,4,8,3,0,4,0,9,6,6,0,0,5,1,4},{7,1,3,1,8,8,3,1,2,1,5,0,2,1,9,1,1,4},{9,5,4,3,5,6,1,3,6,4,9,7,0,8,0,3,9,9},{1,4,2,5,8,7,7,0,0,7,1,2,1,2,7,7,7,4},{3,9,7,9,5,8,9,5,6,9,8,8,0,1,4,2,8,2},{1,5,2,2,2,5,6,3,9,3,1,7,9,6,8,6,8,3},{5,7,8,3,8,8,3,9,9,8,1,9,2,5,4,7,7,7},{2,3,2,4,8,5,1,7,2,9,5,2,4,2,9,2,8,7},{0,1,6,1,1,0,0,6,5,4,3,4,3,7,9,6,1,9}};
-        Object output = minPathSum(metric);
+        //new int[]{186,419,83,408}, 6249
+        Object output = change(5, new int[]{1,2,5});
         System.out.println("Answer="+output);
+
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
     }
 
+    ///https://leetcode.com/problems/coin-change-2/
+    public static int change(int amount, int[] coins) {
+        if (amount < 0) return 0;
+        if (amount == 0) return 1;
+        if (coins == null || coins.length == 0) return 0;
+
+        int[][] dp = new int[coins.length+1][amount+1];
+        for (int i = 0; i <= coins.length; i++) {
+            dp[i][0] = 1;
+        }
+
+        for (int i = 1; i <= coins.length; i++) {
+            for (int j = 1; j <= amount; j++) {
+                if (coins[i-1] > j){
+                    dp[i][j] = dp[i-1][j];
+                }else{
+                    dp[i][j] = dp[i-1][j] + dp[i][j-coins[i-1]];
+                }
+            }
+        }
+        return dp[coins.length][amount];
+    }
+
+    public static int change2(int amount, int[] coins) {
+        if (amount < 0) return 0;
+        if (amount == 0) return 1;
+        if (coins == null || coins.length == 0) return 0;
+
+        int[] dp = new int[amount+1];
+        dp[0] = 1;
+        for (int i = 0; i < coins.length; i++) {
+            for (int j = 1; j <= amount; j++) {
+                dp[j] = dp[j] + (j >= coins[i] ? dp[j-coins[i]] : 0);
+            }
+        }
+        return dp[amount];
+    }
+
+    ///https://leetcode.com/problems/coin-change/
+    private  static int coinChange(int[] coins, int amount) {
+        if (amount==0)return 0;
+        if (amount<0 || coins==null || coins.length==0) return -1;
+        int[] count = new int[amount];
+
+        int result = coinChangeHelper(coins, amount, count);
+        return result;
+    }
+
+    private static int coinChangeHelper(int[] coins, int rem, int[] count) {
+        if (rem == 0) return 0;
+        if (rem < 0) return -1;
+        if (count[rem-1] != 0) return count[rem-1];
+
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i <= coins.length-1 ; i++) {
+            int res = coinChangeHelper(coins, rem-coins[i], count);
+            if (res >= 0 && res < min) {
+                min = 1 + res;
+            }
+        }
+        count[rem-1] = (min == Integer.MAX_VALUE ? -1 : min);
+        return count[rem-1];
+    }
+
+    public static int coinChange_arun(int[] coins, int amount) {
+        if (amount == 0) {
+            return 0;
+        }
+        Map<Integer, Integer> counts = new HashMap<>();
+        for (int coin : coins) {
+            counts.put(coin, 1);
+        }
+        for (int amt = 1; amt <= amount; amt++) {
+            for (int coin : coins) {
+                if (amt >= coin) {
+                    Integer currValue = counts.get(amt);
+                    Integer newVal = null;
+                    if (counts.containsKey(amt - coin)) {
+                        newVal = 1 + counts.get(amt - coin);
+                        if (currValue == null) {
+                            counts.put(amt, newVal);
+                        } else {
+                            counts.put(amt, Integer.min(currValue, newVal));
+                        }
+                    }////if (counts.containsKey(i - coin))
+                }///if (i >= coin)
+            }///for
+        }///for
+        if (counts.containsKey(amount)) {
+            return counts.get(amount);
+        } else {
+            return -1;
+        }
+    }
+
+    /// week 2 day 13
+    private static String removeKdigits(String num, int k) {
+        if (num == null || num.length() == 0 || num.length() == k) return "0";
+        int output = Integer.MAX_VALUE;
+        int deleted = 0;
+        for (int i = 0; i < k; i++) {
+            System.out.println("");
+            for (int j = deleted; j < num.length(); j++) {
+                int zeros = 0;
+                while (j == 0 && zeros+1 < num.length() && num.charAt(zeros+1) == '0'){
+                    zeros++;
+                }
+                if (zeros > 0){
+                    num = num.substring(j+zeros+1);
+                    deleted = j+zeros;
+                    break;
+                }else{
+                    char x = num.charAt(j);
+                    char next = (j+1 < num.length()) ? num.charAt(j+1) : '0'-1;
+                    if (x > next){
+                        num = num.substring(0,j)+num.substring(j+1);
+                        deleted = j;
+                        break;
+                    }
+                }
+            }////j
+        }////i
+        return (num == null || num.length() == 0) ? "0" : num;
+    }
+
+    /// week 2 day 12
+    private static int singleNonDuplicate(int[] nums) {
+        if (nums == null || nums.length == 0) return -1;
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum ^= nums[i];
+        }
+        return sum;
+    }
+
+    /// week 2 day 8
+    private static boolean checkStraightLine(int[][] coordinates) {
+        if (coordinates == null || coordinates.length == 0) return false;
+        if (coordinates.length <= 2) return true;
+        float slope = ((float)(coordinates[1][1]-coordinates[0][1]))/(coordinates[1][0]-coordinates[0][0]);
+        for (int i = 1; i < coordinates.length-1; i++) {
+            int[] curr = coordinates[i];
+            int[] next = coordinates[i+1];
+            float nextSlope = (next[1]-curr[1])/(next[0]-curr[0]);
+            if (nextSlope != slope) return false;
+        }
+        return true;
+    }
+
+    /// week 2 day 11
+    private static int[][] floodFill(int[][] image, int sr, int sc, int newColor) {
+        boolean[][] visited = new boolean[image.length][image[0].length];
+        floodFillHelper(image, sr, sc, newColor, image[sr][sc], visited);
+        return image;
+    }
+    private static void floodFillHelper(int[][] image, int sr, int sc, int newColor, int orig, boolean[][] visited) {
+        if (sr <0 || sr >= image.length || sc < 0 || sc >= image[0].length) return;
+        if (visited[sr][sc]) return;
+        else if (image[sr][sc] != orig){
+            visited[sr][sc] = true;
+            return;
+        }else {
+            image[sr][sc] = newColor;
+            visited[sr][sc] = true;
+            floodFillHelper(image, sr+1, sc, newColor, orig, visited);
+            floodFillHelper(image, sr, sc+1, newColor, orig, visited);
+            floodFillHelper(image, sr, sc-1, newColor, orig, visited);
+            floodFillHelper(image, sr-1, sc, newColor, orig, visited);
+        }
+    }
+
+    private static int findJudge2(int N, int[][] trust) {
+        if (N == 1) return 1;
+        HashMap<Integer, Integer> trustMap = new HashMap<>();
+        HashSet<Integer> commoners = new HashSet<>();
+
+        for (int i = 0; i < trust.length; i++) {
+            commoners.add(trust[i][0]);
+            if (trustMap.containsKey(trust[i][1])){
+                trustMap.put(trust[i][1], 1+trustMap.get(trust[i][1]));
+            }else {
+                trustMap.put(trust[i][1], 1);
+            }
+        }
+        int judge = -1;
+        for (Integer possibleJudge: trustMap.keySet()) {
+            if (commoners.contains(possibleJudge)) continue;
+            if (trustMap.get(possibleJudge) == N-1){
+                if (judge == -1)
+                    judge = possibleJudge;
+                else return -1;
+            }
+        }
+        return judge;
+    }
+
+    private static int findJudge(int N, int[][] trust) {
+        HashSet<Integer> all = new HashSet<>();
+        HashSet<Integer> trustees = new HashSet<>();
+        for (int i = 1; i <= N; i++) {
+            all.add(i);
+        }
+        for (int i = 0; i < trust.length; i++) {
+            all.remove(trust[i][0]);
+        }
+        if (all.size() != 1) return -1;
+        int possibleJudge = all.iterator().next();
+        for (int i = 0; i < trust.length; i++) {
+            if(trust[i][1] == possibleJudge){
+                trustees.add(trust[i][0]);
+            }
+        }
+        if (trustees.size() == N-1) return possibleJudge;
+        else return -1;
+    }
+
+    private static boolean isCousins_Aruns(TreeNode root, int x, int y) {
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        queue.add(root);
+        if (root.val == x || root.val == y) {
+            return false;
+        }
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            TreeNode xNode = null;
+            TreeNode yNode = null;
+            TreeNode xNodeParent = null;
+            TreeNode yNodeParent = null;
+            for (int i = 0; i < size; i++) {
+                TreeNode node = queue.poll();
+                if (node.left != null) {
+                    if (node.left.val == x) {
+                        xNode = node.left;
+                        xNodeParent = node;
+                    }
+                    if (node.left.val == y) {
+                        yNode = node.left;
+                        yNodeParent = node;
+                    }
+                    queue.add(node.left);
+                }
+                if (node.right != null) {
+                    if (node.right.val == x) {
+                        xNode = node.right;
+                        xNodeParent = node;
+                    }
+                    if (node.right.val == y) {
+                        yNode = node.right;
+                        yNodeParent = node;
+                    }
+                    queue.add(node.right);
+                }
+            }
+            if (xNode != null && yNode == null) {
+                return false;
+            } else if (xNode == null && yNode != null) {
+                return false;
+            } else if (xNode != null && yNode != null) {
+                return xNodeParent != yNodeParent;
+            }
+        }
+        return false;
+    }
+
+
+    private static boolean isCousins(TreeNode root, int x, int y) {
+        if (root == null || root.left == null || root.right == null) return false;
+        int depthX = findDeapth(root, x);
+        int depthY = findDeapth(root, y);
+        if (depthX != depthY) return false;
+        int parentX = findParent(root, x);
+        int parentY = findParent(root, y);
+        if (parentX != parentY) return true;
+        else return false;
+    }
+
+    private static int findDeapth(TreeNode root, int x) {
+        if (root == null) return 0;
+        if (root.val == x) return 1;
+        int left = findDeapth(root.left, x);
+        int right = findDeapth(root.right, x);
+        if (left > 0 || right > 0) return 1 + left + right;
+        else return 0;
+    }
+
+    private static int findParent(TreeNode root, int x) {
+        if (root == null || (root.left == null && root.right == null)) return -1;
+        if ( (root.left != null && root.left.val == x) || (root.right != null && root.right.val == x)) return root.val;
+        int leftP = findParent(root.left, x);
+        if (leftP != -1) return leftP;
+        int rightP = findParent(root.right, x);
+        if (rightP != -1) return rightP;
+        return -1;
+    }
+
+    ///May day 6
+    private static int majorityElement(int[] nums) {
+        HashMap<Integer, Integer> countMap = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (countMap.get(nums[i]) == null)
+                countMap.put(nums[i], 1);
+            else
+                countMap.put(nums[i], 1+countMap.get(nums[i]));
+        }
+        for (Integer key: countMap.keySet()) {
+            if (countMap.get(key) > nums.length/2) return key;
+        }
+        return -1;
+    }
+
+    ///May day 5
+    private static int firstUniqChar(String s) {
+        HashSet<Character> repeated = new LinkedHashSet<>();
+        HashMap<Character, Integer> uniques = new LinkedHashMap<>();
+
+        for (int i = 0; i < s.length(); i++) {
+            char x = s.charAt(i);
+            if (repeated.contains(x)){
+                uniques.remove(x);
+            }else {
+                repeated.add(x);
+                uniques.put(x, i);
+            }
+        }
+        for (char x: uniques.keySet()) {
+            return uniques.get(x);
+        }
+        return -1;
+    }
+
+    /// https://leetcode.com/problems/decode-ways/
+    private static int numDecodings(String s) {
+//        HashSet<Integer> keys = new HashSet<>();
+//        for (int i = 1; i <= 26; i++) {
+//            keys.add(i);
+//        }
+        int[] count = new int[1];
+//        for (int i = 0; i < s.length(); i++) {
+//            int x = s.charAt(i) - 48;
+//            if (keys.contains(x))count++;
+//            if (i < s.length()-1 && keys.contains(10*x+ (s.charAt(i+1)-48)))count++;
+//        }
+        numDecodingsHelper(s, 0, count);
+        return count[0];
+    }
+
+    ///May day 4
+    private static int findComplement(int num) {
+        int temp = num;
+        int allOnes = 1; int raise = 0;
+        while (temp != 0){
+            temp /= 2;
+            raise++;
+        }
+        for (int i = 0; i < raise; i++) {
+            allOnes *= 2;
+        }
+        allOnes = allOnes - 1;
+        int answer = num ^ allOnes;
+        return answer;
+    }
+
+    public int findComplementArun(int num) {
+        int digits = (int) (Math.log(num) / Math.log(2)) + 1;
+        long allOnes = (long) Math.pow(2, digits) - 1;
+        return (int) (num ^ allOnes);
+    }
+    private static void numDecodingsHelper(String s, int idx, int[] count) {
+        if (idx < 0 || idx > s.length()) return;
+        if (idx == s.length()) {
+            count[0]++;
+            return;
+        }else {
+            for (int i = idx; i < s.length(); i++) {
+                numDecodingsHelper(s, i+1, count);
+                if (i < s.length()-1){
+                    int y = 10*(s.charAt(i)-48) + (s.charAt(i+1)-48);
+                    if (y>=1 && y <=26){
+                        numDecodingsHelper(s, i+2, count);
+                        i++;
+                    }
+                }
+            }
+        }
+
+    }
+
+    ///May day 3
+    private static boolean canConstruct(String ransomNote, String magazine) {
+        int[] notes = new int[26];
+        for (int i = 0; i < ransomNote.length(); i++) {
+            notes[ransomNote.charAt(i)-'a']++;
+        }
+        for (int i = 0; i < magazine.length(); i++) {
+             notes[magazine.charAt(i)-'a']--;
+        }
+        for (int i = 0; i < notes.length; i++) {
+            if (notes[i] > 0) return false;
+        }
+        return true;
+    }
+
+    ///May day 2
+    private static int numJewelsInStones(String J, String S) {
+        HashSet<Character> jewels = new HashSet<>();
+        for (int i = 0; i < J.length(); i++) {
+            jewels.add(J.charAt(i));
+        }
+        int count = 0;
+        for (int i = 0; i < S.length(); i++) {
+            if (jewels.contains(S.charAt(i))) count++;
+        }
+        return count;
+    }
+
+    ///May Day 1
+    /// https://leetcode.com/problems/first-bad-version/
+    private static int firstBadVersion(int n) {
+        int i=1,j=n, mid=0;
+        int lastFound = 0;
+        while (i<j){
+            mid=i+(j-i)/2;
+            if (isBadVersion(mid)){
+                lastFound = mid;
+                j = mid;
+            }else {
+                i = mid+1;
+            }
+        }
+        return lastFound;
+    }
+    static boolean isBadVersion(int version){
+        if (version >= 2) return true;
+        else return false;
+    }
+
+
+
+    /// Week 3 day28
+    private static boolean isValidSequence(TreeNode root, int[] arr) {
+        if (root == null || arr == null || arr.length == 0) return false;
+        boolean answer = isValidSequence(root, arr, 0);
+        return answer;
+    }
+
+    private static boolean isValidSequence(TreeNode root, int[] arr, int pos) {
+        if (pos > arr.length-1 || root == null || root.val != arr[pos]) return false;
+        if (root.left == null && root.right == null && pos == arr.length-1) return true;
+        return isValidSequence(root.left, arr, pos+1) || isValidSequence(root.right, arr, pos+1);
+    }
+
+    /// Week 3 day28
+    private static int maximalSquare(char[][] matrix) {
+        int maxLen = 0;
+        if (matrix == null || matrix.length == 0) return maxLen;
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (matrix[i][j] == '0') continue;
+                else{
+                    while (isSquare(matrix, i, j, i+maxLen, j+maxLen)){
+                        maxLen++;
+                    }
+                }
+            }
+        }
+        return maxLen*maxLen;
+    }
+
+    private static boolean isSquare(char[][] matrix, int startX, int startY, int endX, int endY) {
+        if (endX > matrix.length-1 || endY > matrix[0].length-1) return false;
+        for (int i = startX; i <= endX ; i++) {
+            for (int j = startY; j <= endY; j++) {
+                if (matrix[i][j] == '0') return false;
+            }
+        }
+        return true;
+    }
+
+    /// Week 3 day29
+    private static int maxPathSum(TreeNode root) {
+        int[] max = new int[1];
+        max[0] = Integer.MIN_VALUE;
+        int discard = maxPathSumHelper(root, max);
+        return max[0];
+    }
+
+    private static int maxPathSumHelper(TreeNode node, int[] max) {
+        if (node == null) return 0;
+        if (node.left == null && node.right == null) {
+            if (max[0] < node.val) max[0] = node.val;
+            return node.val;
+        }
+        int sum = node.val;
+        int left = maxPathSumHelper(node.left, max);
+        if (left > 0) sum += left;
+        int right = maxPathSumHelper(node.right, max);
+        if (right > 0) sum += right;
+        if (max[0] < sum) max[0] = sum;
+        return node.val + Math.max( (left<0? 0:left), (right<0?0:right));
+    }
+
+
+    private static void testLRUCache(){
+        LRUCache cache = new LRUCache(2);
+        cache.put(1,1);
+        cache.put(2,2);
+        int x = cache.get(1);
+        cache.put(3,3);
+        x = cache.get(2);
+        cache.put(4,4);
+        x = cache.get(1);
+        x = cache.get(3);
+        x = cache.get(4);
+
+    }
+    /// Week 3 day23
+    private static int rangeBitwiseAnd(int m, int n) {
+        if (m < 0 || n < m) return 0;
+        int output = m;
+        for (int i = m+1; i <= n; i++) {
+            output = (output & i);
+        }
+        int x = 9;
+        x >>= 1;
+        return output;
+    }
+
+
+    /// Week 3 day22
+    public static int subarraySum(int[] nums, int k) {
+        int count = 0;
+        for (int i = 0; i < nums.length-1; i++) {
+            int sum = nums[i];
+            if (sum == k){
+                count++;
+            }
+            for (int j = i+1; j < nums.length; j++) {
+                sum += nums[j];
+                if (sum == k){
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    private static void subarraySumHelper(int[] nums, int sum){
+
+    }
+
+    /// https://leetcode.com/problems/partition-list/
+    public ListNode partition(ListNode head, int x) {
+        if (head == null || head.next == null) return head;
+        ListNode first = head;
+        ListNode prevToPivot = null;
+        ListNode pivot = head.val == x ? head : null;
+        ListNode prev = head;
+        ListNode curr = head.next;
+
+        if (pivot == null){
+            while (curr != null && curr.val != x){
+                prev = curr;
+                curr = curr.next;
+            }
+            prevToPivot = prev;
+            pivot = curr;
+            if (pivot == null) return pivot;
+        }
+
+        while (curr != null){
+            if (curr.val < x){
+
+            }
+            curr = curr.next;
+
+        }
+        return head;
+    }
+
+
+    /// Week 3 day21
+    public int leftMostColumnWithOne(BinaryMatrix binaryMatrix) {
+        int row = binaryMatrix.dimensions().get(0);
+        int col = binaryMatrix.dimensions().get(1);
+        int result = -1; //assume its last column
+
+        for (int i = row-1; i >= 0; i--) {
+            int j = (result == -1 ? col-1 : result);
+            for (; j >= 0 ; j--) {
+                if (binaryMatrix.get(i,j) == 0) break;
+                else {
+                   result = j;
+                }
+            }
+        }
+        return result;
+    }
+
+    /// https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
+    private static ListNode deleteDuplicates(ListNode head) {
+        if (head == null || head.next == null) return head;
+        ListNode output = new ListNode(head.val-1);
+        output.next = head;
+        getNextNodeAndRemoveIfDupe(output);
+        return output.next;
+    }
+
+    private static boolean getNextNodeAndRemoveIfDupe(ListNode node){
+        if (node.next == null) return false;
+        else {
+            boolean toDelete = getNextNodeAndRemoveIfDupe(node.next);
+            if (node.next.val == node.val) {
+                node.next = node.next.next;
+                return true;
+            }else if (toDelete){
+                node.next = node.next.next;
+                return false;
+            }
+        }
+        return false;
+    }
+
+    // week 4 day 20
+    private static TreeNode bstFromPreorder(int[] preorder) {
+        if (preorder == null || preorder.length == 0) return null;
+        TreeNode root = new TreeNode(preorder[0]);
+        for (int i = 1; i < preorder.length; i++) {
+            TreeNode node = new TreeNode(preorder[i]);
+            appendNode(root, node);
+        }
+        return root;
+    }
+
+    private static void appendNode(TreeNode root, TreeNode node){
+        if (root.val > node.val){
+            if (root.left != null) appendNode(root.left, node);
+            else {
+                root.left = node;
+            }
+        }else if(root.val < node.val){
+            if (root.right != null) appendNode(root.right, node);
+            else {
+                root.right = node;
+            }
+        }
+    }
+
+    /// https://leetcode.com/problems/search-in-rotated-sorted-array/
+    private static int search(int[] nums, int target) {
+        if (nums == null || nums.length == 0) return -1;
+        final int len = nums.length;
+        int i = 0, j = len - 1;
+        int mid = 0; int pivot = 0;
+        if (nums[0] >= nums[len-1]){
+            while (i<=j){
+                mid = i+ (j-i)/2;
+                if (mid > 0 && nums[mid-1] > nums[mid]){
+                    pivot = mid;
+                    break;
+                }
+                if (nums[0] > nums[mid]) j = mid-1;
+                else i = mid+1;
+            }
+        }
+        if (nums[pivot] == target) return pivot;
+        if (pivot == 0){
+            i = 0; j = len-1;
+        }else if (nums[0] <= target) {
+            i = 0; j = pivot-1;
+        }else {
+            i = pivot; j = len-1;
+        }
+
+        while (i<=j){
+            mid = i+ (j-i)/2;
+            if (nums[mid] == target) return mid;
+            else if (nums[mid] < target){
+                i = mid + 1;
+            }else {
+                j = mid-1;
+            }
+        }
+        return -1;
+    }
+
+
+    /// Week 2 day 3
+    private static int diameterOfBinaryTree(TreeNode root) {
+        Map<String, Integer> result = new HashMap<>();
+        result.put("max", 0);
+        diameterOfBinaryTreeHelper(root, result);
+        return result.get("max");
+    }
+
+    private static int diameterOfBinaryTreeHelper(TreeNode node, Map<String, Integer> result) {
+        if (node == null) return 0;
+        if (node.left == null && node.right == null){
+            return 1;
+        }
+
+        int left = diameterOfBinaryTreeHelper(node.left, result);
+        int right = diameterOfBinaryTreeHelper(node.right, result);
+        int distance = left + right;
+        if (distance > result.get("max")){
+            result.put("max", distance);
+        }
+        return 1+Math.max(left, right);
+    }
+
+
+    /// week 3 day 18
     /// https://leetcode.com/problems/minimum-path-sum/
     private static int minPathSum2(int[][] grid) {
         boolean[][] visited = new boolean[grid.length][grid[0].length];
         return minPathSum2(grid, grid.length-1, grid[0].length-1, visited);
     }
     private static int minPathSum2(int[][] grid, int row, int col, boolean[][] visited) {
+        if (row < 0 || col < 0) return Integer.MAX_VALUE;
         if (row == 0 && col == 0) return grid[0][0];
 
         if (visited[row][col]){
             return grid[row][col];
         }else{
             visited[row][col] = true;
-            if (row == 0){
-                grid[row][col] = grid[row][col]+ minPathSum2(grid, row, col-1, visited);
-            }else if (col == 0){
-                grid[row][col] = grid[row][col]+ minPathSum2(grid, row-1, col, visited);
-            }else {
-                grid[row][col] = grid[row][col]+ Math.min(minPathSum2(grid, row, col-1, visited), minPathSum2(grid, row-1, col, visited));
-            }
+            grid[row][col] = grid[row][col]+ Math.min(minPathSum2(grid, row, col-1, visited), minPathSum2(grid, row-1, col, visited));
             return grid[row][col];
         }
     }
+
+    /// week 3 day 17
+    private static int numIslands(char[][] grid) {
+        if (grid == null || grid.length == 0 ) return 0;
+        Map<String, Integer> count = new HashMap<>();
+        count.put("COUNT", 0);
+        boolean[][] used = new boolean[grid.length][grid[0].length];
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if(!used[i][j])numIslands(grid, i, j, used, count, false);
+            }
+        }
+        return count.get("COUNT");
+    }
+
+    private static boolean numIslands(char[][] grid, int i, int j, boolean[][] used, Map<String, Integer> count, boolean counted) {
+        if (i<0 || j <0 || i > grid.length-1 || j > grid[0].length-1){
+            return true;
+        }
+        if (grid[i][j] == '0' || used[i][j]) return true;
+        if (grid[i][j] == '1'){
+            used[i][j] = true;
+            boolean left = numIslands(grid, i, j-1, used, count, true);
+            boolean right = numIslands(grid, i, j+1, used, count, true);
+            boolean up = numIslands(grid, i-1, j, used, count, true);
+            boolean down = numIslands(grid, i+1, j, used, count, true);
+            if (left && right && up && down){
+                if (!counted)count.put("COUNT", 1+count.get("COUNT"));
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    // week 2 day 14
+    private static String stringShift(String s, int[][] shift) {
+        if (s == null || s.length()==0) return s;
+        char[] ary = s.toCharArray();
+
+        for (int i = 0; i < shift.length; i++) {
+            int[] instr = shift[i];
+            if (instr[0] == 0){
+                leftShift(ary, instr[1]%ary.length);
+            }else {
+                rightShift(ary, instr[1]%ary.length);
+            }
+        }
+        return new String(ary);
+    }
+
+    private static void rightShift(char[] ary, int pos){
+        char[] temp = new char[pos];
+        for (int i = ary.length-1; i >= 0; i--) {
+            if (i+pos > ary.length-1){
+                temp[pos-1 - (ary.length-1 -i)] = ary[i];
+            }else{
+                ary[i+pos] = ary[i];
+            }
+        }
+        for (int i = 0; i < pos; i++) {
+            ary[i] = temp[i];
+        }
+    }
+
+    private static void leftShift(char[] ary, int pos){
+        char[] temp = new char[pos];
+        for (int i = 0; i < ary.length; i++) {
+            if (i < pos){
+                temp[i] = ary[i];
+            }else{
+                ary[i-pos] = ary[i];
+            }
+        }
+        for (int i = 0; i < pos; i++) {
+            ary[ary.length-pos+i] = temp[i];
+        }
+    }
+
+    /// https://leetcode.com/problems/remove-duplicates-from-sorted-array-ii/
+    private static int removeDuplicates(int[] nums) {
+        if (nums == null || nums.length<=2) return nums.length;
+        int insertIdx = 0;
+        int count = 1;
+        for (int i = 0; i < nums.length; i++) {
+            if (i>0 && nums[i-1] == nums[i]){
+                count++;
+                if (count > 2) {
+                    insertIdx--;
+                }
+            }else if (i > 0 && nums[i-1] != nums[i]){
+                count = 1;
+            }
+            nums[insertIdx++] = nums[i];
+        }
+        return insertIdx;
+    }
+
+
+    private static void testMinStack(){
+        MinStack stack = new MinStack();
+        stack.push(-10);stack.push(14);int min  = stack.getMin();min = stack.getMin();
+        stack.push(-20);min = stack.getMin();min = stack.getMin();int top = stack.top();
+        min = stack.getMin();stack.pop();stack.push(10);stack.push(-7);min = stack.getMin();
+        stack.push(-7);stack.pop();top = stack.top();min = stack.getMin();stack.pop();
+    }
+
+    /// 30 day, week 2 day 2
+    private static boolean backspaceCompare(String S, String T) {
+        Stack<Character> first = new Stack<>();
+        Stack<Character> second = new Stack<>();
+        for (int i = 0; i < S.length(); i++) {
+            if ('#' != S.charAt(i)){
+                first.push(S.charAt(i));
+            }else{
+                if (!first.empty()) first.pop();
+            }
+        }
+        for (int i = 0; i < T.length(); i++) {
+            if ('#' != T.charAt(i)){
+                second.push(T.charAt(i));
+            }else{
+                if (!second.empty()) second.pop();
+            }
+        }
+        return first.equals(second);
+    }
+
+    /// 30 day, week 2 day 1
+    private static ListNode middleNode(ListNode head) {
+        if (head == null || head.next == null) return head;
+        ListNode first = head;
+        ListNode second = head;
+
+        while (second != null){
+            if (second.next != null){
+                first = first.next;
+                second = second.next.next;
+            }else break;
+        }
+        return first;
+    }
+
+    /// https://leetcode.com/problems/word-search/
+    private static boolean exist(char[][] board, String word) {
+        boolean[][] used = new boolean[board.length][board[0].length];
+        for (int row = 0; row < board.length; row++) {
+            for (int col = 0; col < board[0].length; col++) {
+                if (word.charAt(0) == board[row][col]){
+                    boolean found = exist(board, used, word, row, col, 0);
+                    if (found) return found;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean exist(char[][] board, boolean[][] used, String word, int row, int col, int index) {
+        if (index == word.length()) return true;
+        if (row < 0 || col < 0 || row >= board.length || col >= board[0].length) return false;
+
+        boolean match = false;
+        if (!used[row][col] && word.charAt(index) == board[row][col]){
+            used[row][col] = true;
+            if (!match) match = exist(board, used, word, row, col+1, index+1);
+            if (!match) match = exist(board, used, word, row+1, col, index+1);
+            if (!match) match = exist(board, used, word, row, col-1, index+1);
+            if (!match) match = exist(board, used, word, row-1, col, index+1);
+            used[row][col] = false;
+        }else {
+            return false;
+        }
+        return match;
+    }
+
+    public List<List<String>> groupAnagrams_copy(String[] strs) {
+        HashMap<String,Integer> map=new HashMap();
+        List<List<String>> res=new ArrayList();
+        int k=0;
+        for(int i=0;i<strs.length;i++){
+            char[] tmp=strs[i].toCharArray();
+            Arrays.sort(tmp);
+            String tmp1=new String(tmp);
+
+            if(map.get(tmp1)!=null){
+                int n=map.get(tmp1.toString());
+                List<String> l=res.get(n);
+                l.add(strs[i]);
+                res.set(n,l);
+            }
+            else{
+                map.put(tmp1,new Integer(k));
+                k=k+1;
+                List<String> templ=new ArrayList();
+                templ.add(strs[i]);
+                res.add(templ);
+
+            }
+        }
+        return res;
+    }
+
+    /// https://leetcode.com/problems/group-anagrams/
+    private static List<List<String>> groupAnagrams(String[] strs) {
+        List<List<String>> output = new ArrayList<>();
+        if (strs == null || strs.length==0) return output;
+
+        HashMap<String, List<String>> grouped = new HashMap<>();
+        ArrayList<String> oneList = new ArrayList<>();
+        oneList.add(strs[0]);
+        grouped.put(strs[0], oneList);
+        output.add(oneList);
+        for (int i = 1; i < strs.length; i++) {
+            String current = strs[i];
+            boolean success = false;
+            for (String key: grouped.keySet()) {
+                if (isAnagram(key, current)){
+                    grouped.get(key).add(current);
+                    success = true;
+                    break;
+                }
+            }
+            if (!success){
+                ArrayList<String> list = new ArrayList<>();
+                list.add(current);
+                grouped.put(current, list);
+                output.add(list);
+            }
+        }
+        return output;
+    }
+
+    private static boolean isAnagram(String s, String t) {
+        if (s == null || t == null || s.length() != t.length())
+            return false;
+
+        int[] counts = new int[26];
+        for (int i = 0; i < s.length(); i++) {
+            counts[s.charAt(i)-'a']++;
+            counts[t.charAt(i)-'a']--;
+        }
+        for (int i = 0; i < counts.length; i++) {
+            if (counts[i] != 0) return false;
+        }
+        return true;
+    }
+
+
+    /// 30 day challenge day 5
+    private static int maxProfit(int[] prices) {
+        if (prices == null || prices.length ==0) return 0;
+        boolean bought = false;
+        int buyIdx = -1;
+        int profit = 0;
+        for (int i = 0; i < prices.length; i++) {
+            if ((i+1)<prices.length && prices[i] < prices[i+1] && !bought){
+                bought = true;
+                buyIdx = i;
+            }
+            if ((i+1)<prices.length && prices[i] > prices[i+1] && bought){
+                bought = false;
+                profit += (prices[i]-prices[buyIdx]);
+            }
+        }
+        if (bought){
+            profit += (prices[prices.length-1]-prices[buyIdx]);
+        }
+        return profit;
+    }
+
+    /// count the bits to change
+    private static int bitsToChange(int m, int n){
+        int x = m ^ n;
+        int y = 1;
+        int count = 0;
+        while (x > 0){
+            count += (x & y);
+            x = x >> 1;
+        }
+        return count;
+    }
+
+    /// bitwise operator tests
+    private static void bitwiseOperators(){
+        int x = 11;
+        int y = 1;
+        int count = 0;
+        while (x > 0){
+            count += x & y;
+            x = x>>1;
+        }
+        System.out.println("ans = " + count);
+    }
+
+    /// 30 day challenge day 4
+    private static void moveZeroes(int[] nums) {
+        if (nums == null || nums.length<=1) return;
+        int nonzero = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != 0){
+                nums[nonzero++] = nums[i];
+            }
+        }
+        for (int i = nonzero; i < nums.length; i++) {
+            nums[i] = 0;
+        }
+    }
+
+    /// 30 day challenge day 3
+    private static int maxSubArray(int[] nums) {
+        if (nums == null || nums.length == 0) return 0;
+        int sum = 0;
+        int max = nums[0];
+        for (int i = 0; i < nums.length; i++) {
+            sum = nums[i];
+            if (sum > max) max = sum;
+            for (int j = i+1; j < nums.length; j++) {
+                sum += nums[j];
+                if (sum > max) max = sum;
+            }
+        }
+        return max;
+    }
+
+    /// 30 day challenge day 1
+    private static int singleNumber(int[] nums) {
+        if (nums == null || nums.length == 0) return -1;
+        HashSet<Integer> keys = new HashSet<>();
+        for (int num: nums) {
+            if(keys.contains(num)) keys.remove(num);
+            else keys.add(num);
+        }
+        return keys.iterator().next();
+    }
+
+    private static List<Integer> kthPerm(int n, int k) {
+        List<Integer> result = new ArrayList<>();
+        List<Integer> digits = new ArrayList<>();
+        for (int i = 1; i <= n; i++) {
+            digits.add(i);
+        }
+        kthPerm(n, k, result, digits);
+        return result;
+    }
+
+    private static void kthPerm(int n, int k, List<Integer> result, List<Integer> digits) {
+        if (k == 1) {
+            result.addAll(digits);
+            return;
+        }
+        int itemsPerDigit = factorial(n - 1);
+        int digitLocation = (int) Math.ceil((float) k / itemsPerDigit);
+        int digit = digits.remove(digitLocation - 1);
+        result.add(digit);
+        int remaining = k - itemsPerDigit * (digitLocation - 1);
+        kthPerm(n - 1, remaining, result, digits);
+    }
+
+    private static int factorial(int n) {
+        int f = 1;
+        for (int i = 1; i <= n; i++) {
+            f *= i;
+        }
+        return f;
+    }
+
+    /// https://leetcode.com/problems/permutations-ii/   TODO
+    private static  List<List<Integer>> permuteUnique(int[] nums) {
+        List<List<Integer>> output = new ArrayList<>();
+        Arrays.sort(nums);
+        boolean[] used = new boolean[nums.length];
+        permuteUniqueHelper(nums, used,new ArrayList<Integer>(), output);
+        return output;
+    }
+
+    private static void permuteUniqueHelper(int[] nums, boolean[] used, List<Integer> tempList, List<List<Integer>> output) {
+        if (tempList.size() == nums.length){
+            output.add(new ArrayList<>(tempList));
+            return;
+        }else if (tempList.size() > nums.length){
+            return;
+        }else {
+            for (int i = 0; i < nums.length; i++) {
+                if (!used[i]){
+                    tempList.add(nums[i]);
+                    used[i] = true;
+                    permuteUniqueHelper(nums, used, tempList, output);
+                    used[i] = false;
+                    tempList.remove(tempList.size()-1);
+                    while (i < nums.length-1 && nums[i] == nums[i+1]) i++;
+                }
+            }
+        }
+    }
+
+    private static List<List<Integer>> allCombinations(int[] values) {
+        List<List<Integer>> allCombs = new ArrayList<>();
+        allCombs.add(new ArrayList<>());
+
+        for (int v: values) {
+            List<List<Integer>> newCombinations = new ArrayList<>();
+            for (List<Integer> l: allCombs) {
+                List<Integer> newComb = new ArrayList<>();
+                newComb.addAll(l);
+                newComb.add(v);
+                newCombinations.add(newComb);
+            }
+            allCombs.addAll(newCombinations);
+        }
+        return allCombs;
+    }
+
+
+    /// https://leetcode.com/problems/generate-parentheses/
+    private static List<String> generateParenthesis(int n) { //// (())(())
+        List<String> output = new ArrayList<>();
+        if (n <= 0 ) return output;
+        HashSet<String> existing = new HashSet<>();
+        existing.add("");
+        for (int i = 1; i <= n; i++) {
+            List<String> temp = new ArrayList<>();
+            for (String paranths: existing) {
+                temp.add("("+paranths+")");
+                temp.add("()"+paranths);
+                temp.add(paranths+"()");
+            }
+            existing.addAll(temp);
+        }
+        for (String paranth: existing) {
+            if (paranth.length() == 2*n)
+                output.add(paranth);
+        }
+        return output;
+    }
+
+    private static void addParenthesisToSet(int n, String valid, LinkedHashSet<String> values) {
+        if (n == 0) return;
+        values.add("("+valid+")");
+        values.add("("+")"+valid);
+        values.add(valid+"("+")");
+        int len = values.size();
+        for (Iterator<String> itr = values.iterator(); itr.hasNext();){
+            addParenthesisToSet(n-1, itr.next(), values);
+        }
+    }
+
+    private static boolean subsetWithSum(int[] nums, int k){
+        return   subsetWithSum(nums, k, 0);
+    }
+    private static boolean subsetWithSum(int[] nums, int k, int start){/// 5, 1 > 2, 2
+        if(k == 0){
+            return true;
+        }else if(k > 0){
+
+            for(int i = start; i < nums.length; i++){
+                boolean success = subsetWithSum(nums, k-nums[i], i+1);
+                if(success) return success;
+            }
+        }else{
+            return false;
+        }
+
+        return false;
+    }
+
+
+
+    private static boolean isMatch(String text, String regex){
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(text);
+        return m.matches();
+    }
+    /// https://leetcode.com/problems/subsets/
+    private static List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> output = new ArrayList<>();
+        List<Integer> tempList = new ArrayList<>();
+        output.add(new ArrayList<>(tempList));
+        boolean[] used = new boolean[nums.length];
+        HashSet<String> keys = new HashSet<>();
+        subsets(nums, output, new ArrayList<Integer>(), used, 0, nums.length, keys);
+        return output;
+    }
+
+    private static void subsets(int[] nums, List<List<Integer>> output, List<Integer> tempList, boolean[] used, int start, int size, HashSet<String> keys) {
+        if (tempList.size() == size){
+            StringBuilder sb = new StringBuilder();
+            for (Integer key: tempList) {
+                sb.append(key);
+                sb.append("_");
+            }
+            if (!keys.contains(sb.toString())){
+                keys.add(sb.toString());
+                output.add(new ArrayList<>(tempList));
+            }
+            return;
+        }else if(tempList.size() > size){
+            return;
+        }
+        else{
+            for (int j = 1; j <= size; j++) {
+                for (int i = start; i < nums.length; i++) {
+                    if (!used[i]){
+                        tempList.add(nums[i]);
+                        used[i] = true;
+                        subsets(nums,output, tempList,used, i+1, j, keys);
+                        tempList.remove(tempList.size()-1);
+                        used[i] = false;
+                    }
+                }
+            }
+        }
+    }
+
+        /// https://leetcode.com/problems/combinations/
+    private static List<List<Integer>> combine(int n, int k) {
+        List<Integer> tempList = new ArrayList<>();
+        List<List<Integer>> allList = new ArrayList<>();
+        combine(n, k, 1, allList, tempList);
+        return allList;
+    }
+
+    private static void combine(int n, int k, int start, List<List<Integer>> allList, List<Integer> tempList) {
+        if (tempList.size() == k){
+            allList.add(new ArrayList<>(tempList));
+            return;
+        }else {
+            for (int i = start; i <= n; i++) {
+                tempList.add(i);
+                combine(n, k, i+1, allList, tempList);
+                tempList.remove(tempList.size()-1);
+            }
+        }
+    }
+
+    ///https://leetcode.com/problems/set-matrix-zeroes/
+    private static void setZeroes(int[][] matrix) {
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        HashSet<Integer> markedRows = new HashSet<>();
+        HashSet<Integer> markedCols = new HashSet<>();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (matrix[i][j] == 0){
+                    markedRows.add(i);
+                    markedCols.add(j);
+                }
+            }
+        }
+        for (Integer row: markedRows) {
+            Arrays.fill(matrix[row], 0);
+        }
+        for (Integer col: markedCols) {
+            for (int i = 0; i < rows; i++) {
+                matrix[i][col] = 0;
+            }
+        }
+    }
+
+
+    /// https://leetcode.com/problems/simplify-path/
+    private static String simplifyPath(String path) {
+        StringTokenizer st = new StringTokenizer(path, "/");
+        LinkedList<String> root = new LinkedList<>();
+        while (st.hasMoreTokens()){
+            String token = st.nextToken();
+            if (".".equals(token)){
+                continue;
+            }else if("..".equals(token)){
+                if (root.size() > 0)root.removeLast();
+            }else{
+                root.addLast(token);
+            }
+        }
+        StringBuilder sb = new StringBuilder("");
+        for (String dir: root) {
+            sb.append("/").append(dir);
+        }
+        return sb.length() == 0 ? "/" : sb.toString();
+    }
+
 
     /// https://leetcode.com/problems/minimum-path-sum/
     private static int minPathSum(int[][] grid) {
@@ -208,79 +1497,6 @@ public class MediumMain {
         }
         if (neg) output = (1d/output);
         return output;
-    }
-
-
-    /// https://leetcode.com/problems/group-anagrams/
-    private static List<List<String>> groupAnagrams(String[] strs) {
-        List<List<String>> output = new ArrayList<>();
-        if (strs == null || strs.length == 0) return output;
-
-        HashMap<Integer, List<String>> grouped = new HashMap<>();
-        for (int i = 0; i < strs.length; i++) {
-            if(grouped.get(strs[i].length()) == null){
-                grouped.put(strs[i].length(), new ArrayList<>());
-            }
-            grouped.get(strs[i].length()).add(strs[i]);
-        }
-
-        HashMap<String, List<String>> anagrams = new HashMap<>();
-        for (Integer length: grouped.keySet()) {
-            String current = "";
-            List<String> list = grouped.get(length);
-            for (String word: list) {
-                if ("".equals(current)){
-                    current = word;
-                    continue;
-                }
-
-            }
-        }
-
-        return output;
-    }
-
-    private static boolean isAnagram2(String s, String t) {
-        if (s == null || t == null || s.length() != t.length())
-            return false;
-
-        int[] counts = new int[26];
-        for (int i = 0; i < s.length(); i++) {
-            counts[s.charAt(i)-'a']++;
-            counts[t.charAt(i)-'a']--;
-        }
-        for (int i = 0; i < counts.length; i++) {
-            if (counts[i] != 0) return false;
-        }
-        return true;
-    }
-
-
-    /// https://leetcode.com/problems/permutations-ii/   TODO
-    private static  List<List<Integer>> permuteUnique(int[] nums) {
-        List<List<Integer>> output = new ArrayList<>();
-        Arrays.sort(nums);
-        boolean[] used = new boolean[nums.length];
-        permuteUniqueHelper(nums, used, new ArrayList<Integer>(), output);
-        return output;
-    }
-
-    private static void permuteUniqueHelper(int[] nums, boolean[] used, List<Integer> tempList, List<List<Integer>> output) {
-        if (tempList.size() == nums.length){
-            output.add(new ArrayList<>(tempList));
-            return;
-        }else if (tempList.size() > nums.length){
-            return;
-        }else {
-            for (int i = 0; i < nums.length; i++) {
-                if (used[i]) continue;
-                tempList.add(nums[i]);
-                used[i] = true;
-                permuteUniqueHelper(nums, new boolean[nums.length], tempList, output);
-                used[i] = false;
-                tempList.remove(tempList.size()-1);
-            }
-        }
     }
 
     /// https://leetcode.com/problems/combination-sum-ii/
@@ -566,45 +1782,6 @@ public class MediumMain {
         }
     }
 
-    /// https://leetcode.com/problems/search-in-rotated-sorted-array/
-    private static int search(int[] nums, int target) {
-        if (nums == null || nums.length == 0) return -1;
-        int i = 0, j = nums.length - 1;
-        int mid = 0;
-        int pivot = 0;
-
-        while (i<j){
-            mid = (i+j)/2;
-            if (mid < nums.length-1 && nums[mid] > nums[mid+1]){
-                pivot = mid+1;
-                break;
-            }else if (nums[mid] > nums[0]){
-                i=mid+1;
-            }else{
-                j = mid-1;
-            }
-        }
-
-        if (target < nums[pivot] || (pivot > 0 && target > nums[pivot-1]))
-            return -1;
-        if (pivot == 0){
-            i = 0; j = nums.length - 1;
-        } else if (nums[0] <= target && target <= nums[pivot-1]){
-            i = 0; j = pivot - 1;
-        } else {
-            i = pivot; j = nums.length - 1;
-        }
-
-        while (i < j){
-            mid = (i+j)/2;
-            if (nums[mid] == target) return mid;
-            else if (nums[mid] < target) i = mid+1;
-            else j = mid;
-        }
-
-        return -1;
-    }
-
     /// https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
     private static int[] searchRange(int[] nums, int target) {
         int[] output = new int[]{-1,-1};
@@ -794,29 +1971,6 @@ public class MediumMain {
         return head;
     }
 
-
-    /// https://leetcode.com/problems/generate-parentheses/
-    private static List<String> generateParenthesis(int n) {
-        /// TODO
-        List<String> output = new ArrayList<>();
-        if (n <= 0 ) return output;
-        LinkedHashSet<String> values = new LinkedHashSet<>();
-        addParenthesisToSet(n, "", values);
-
-
-        return output;
-    }
-
-    private static void addParenthesisToSet(int n, String valid, LinkedHashSet<String> values) {
-        if (n == 0) return;
-        values.add("("+valid+")");
-        values.add("("+")"+valid);
-        values.add(valid+"("+")");
-        int len = values.size();
-        for (Iterator<String> itr = values.iterator(); itr.hasNext();){
-            addParenthesisToSet(n-1, itr.next(), values);
-        }
-    }
 
     //// https://leetcode.com/problems/4sum/
     private static List<List<Integer>> fourSum(int[] nums, int target) {
@@ -1093,31 +2247,6 @@ public class MediumMain {
     }
 
 
-    /// https://leetcode.com/problems/first-bad-version/
-    private static int firstBadVersion(int n) {
-        if (n<=1) return n;
-        int i=1,j=n, mid=0;
-
-        while (i<j){
-            mid=(i+j)/2;
-            if (isBadVersion(mid)){
-                    if (mid>0 && !isBadVersion(mid-1)){
-                        return mid;
-                    }else {
-                        j=mid;
-                    }
-            }else {
-                i = mid+1;
-            }
-        }
-        return mid;
-    }
-    static boolean isBadVersion(int version){
-        if (version >= 2) return true;
-        else return false;
-    }
-
-
     ///https://leetcode.com/problems/ugly-number-ii/
     private static int nthUglyNumber(int n) {
         if (n < 1) return 0;
@@ -1371,6 +2500,7 @@ public class MediumMain {
         }
     }
 
+    //// this is copied form leetcode
     private static ListNode createLinkedList(int[] nodeValues){
         // Now convert that list into linked list
         ListNode dummyRoot = new ListNode(0);
@@ -1380,5 +2510,62 @@ public class MediumMain {
             ptr = ptr.next;
         }
         return dummyRoot.next;
+    }
+
+    public static class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+        TreeNode(int x) { val = x; }
+    }
+
+    private static TreeNode createTreeNode(String input) {
+        input = input.trim();
+//        input = input.substring(1, input.length() - 1);
+//        if (input.length() == 0) {
+//            return null;
+//        }
+
+        String[] parts = input.split(",");
+        String item = parts[0];
+        TreeNode root = new TreeNode(Integer.parseInt(item));
+        Queue<TreeNode> nodeQueue = new LinkedList<>();
+        nodeQueue.add(root);
+
+        int index = 1;
+        while(!nodeQueue.isEmpty()) {
+            TreeNode node = nodeQueue.remove();
+
+            if (index == parts.length) {
+                break;
+            }
+
+            item = parts[index++];
+            item = item.trim();
+            if (!item.equals("null")) {
+                int leftNumber = Integer.parseInt(item);
+                node.left = new TreeNode(leftNumber);
+                nodeQueue.add(node.left);
+            }
+
+            if (index == parts.length) {
+                break;
+            }
+
+            item = parts[index++];
+            item = item.trim();
+            if (!item.equals("null")) {
+                int rightNumber = Integer.parseInt(item);
+                node.right = new TreeNode(rightNumber);
+                nodeQueue.add(node.right);
+            }
+        }
+        return root;
+    }
+
+
+    public abstract class BinaryMatrix{
+        public abstract int get(int x, int y);
+        public abstract List<Integer> dimensions();
     }
 }
