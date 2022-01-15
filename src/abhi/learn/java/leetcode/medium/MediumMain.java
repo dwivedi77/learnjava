@@ -16,13 +16,291 @@ public class MediumMain {
     public static void main(String[] args) {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
-        //new int[]{186,419,83,408}, 6249
-        Object output = change(5, new int[]{1,2,5});
-        System.out.println("Answer="+output);
+
+        int[] input = new int[]{-1,-100,3,99};
+        rotate(input, 2);
+//        Object output  = rotate(input, 3);
+
+//        System.out.println("Answer="+output);
 
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
     }
+
+
+    /// https://leetcode.com/problems/rotate-array/
+    public static void rotate(int[] nums, int k) {
+        if (nums == null || nums.length == 0) return;
+        int intermediate = nums[0];
+        int idx = 0;
+        int cnt = 0;
+        int N = nums.length;
+        while (cnt <= N){
+            int newIdx = (idx+k+N)%N;
+            int temp = nums[newIdx];
+            nums[newIdx] = intermediate;
+            intermediate = temp;
+
+            idx = newIdx;
+            cnt++;
+        }
+    }
+
+
+    /// https://leetcode.com/problems/the-number-of-weak-characters-in-the-game/
+    private static int numberOfWeakCharacters(int[][] properties) {
+        if (properties == null || properties.length <= 1) return 0;
+        Set<Integer> count = new HashSet<>();
+        int i = 0; int j = properties.length-1;
+        while (i<j){
+            if ( properties[i][0] < properties[j][0] && properties[i][1] < properties[j][1]){
+                count.add(i);i++;
+            }else if ((properties[i][0] > properties[j][0] && properties[i][1] > properties[j][1])){
+                count.add(j);j--;
+            }
+        }
+
+        return count.size();
+    }
+
+    /// https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/
+    public static boolean hasGroupsSizeX(int[] deck) {
+        if (deck == null || deck.length <= 1) return false;
+
+        Map<Integer, Integer> groups = new HashMap<>();
+        for (int card : deck) {
+            if (groups.get(card) == null){
+                groups.put(card, 1);
+            }else{
+                groups.put(card, 1+groups.get(card));
+            }
+        }
+
+        int smallest = Integer.MAX_VALUE;
+        for (int value: groups.values()) {
+            if (value < smallest && value > 1)
+                smallest = value;
+        }
+
+        /*
+        2,3,4....smallest
+         */
+        for (int i = 2; i <= smallest; i++) {
+            boolean success = true;
+            for (int value: groups.values()) {
+                if (value % i != 0) success = false;
+            }
+            if (success) return true;
+        }
+
+        return false;
+    }
+
+
+    /// https://leetcode.com/problems/remove-one-element-to-make-the-array-strictly-increasing/
+    private static boolean canBeIncreasing(int[] nums) { //// TODO
+        if (nums == null || nums.length==0) return false;
+        if (nums.length == 1) return true;
+
+        int faults = 0;
+        int secondB = Integer.MIN_VALUE;
+        int biggest = nums[0];
+
+        for (int i = 1; i < nums.length; i++) {
+            int current = nums[i];
+            if (current > biggest) {
+                secondB = biggest;
+                biggest = current;
+                continue;
+            }else{
+                faults++;
+                if (faults > 1) return false;
+                if (current <= secondB){
+                    continue;
+                }else{
+                    biggest = current;
+                }
+
+            }
+        }
+        return true;
+    }
+
+
+    /// https://leetcode.com/problems/sorting-the-sentence/
+    private static String sortSentence(String s) {
+        if (s == null || s.length() == 0) return s;
+        StringTokenizer st = new StringTokenizer(s, " ");
+        String[] results = new String[st.countTokens()];
+        while (st.hasMoreTokens()){
+            String token = st.nextToken();
+            int i = token.length()-1;
+            while (token.charAt(i) >= '0' && token.charAt(i) <= '9'){
+                i--;
+            }
+            int idx = Integer.parseInt(token.substring(i+1)) -1;
+            results[idx] = token.substring(0, i+1);
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < results.length; i++) {
+            sb.append(results[i]);
+            if (i < results.length-1){
+                sb.append(' ');
+            }
+        }
+        return sb.toString();
+    }
+
+    /// https://leetcode.com/problems/check-if-numbers-are-ascending-in-a-sentence/
+    public static boolean areNumbersAscending(String s) {
+        if (s == null || s.length() == 0) return false;
+        StringTokenizer toekns = new StringTokenizer(s, " ");
+        int lastInt = Integer.MIN_VALUE;
+        while (toekns.hasMoreTokens()){
+            String token = toekns.nextToken();
+            if (isInteger(token)){
+                int num = Integer.parseInt(token);
+                if (num > lastInt){
+                    lastInt = num;
+                }else return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isInteger(String token) {
+        try {
+            Integer.parseInt(token);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+
+    /// https://leetcode.com/problems/number-of-valid-words-in-a-sentence/
+    private static int countValidWords(String sentence) {
+        if (sentence == null || sentence.length() == 0) return 0;
+        StringTokenizer toekns = new StringTokenizer(sentence, " ");
+        int count = 0;
+        while (toekns.hasMoreTokens()){
+            String token = toekns.nextToken();
+                if (isValidWord(token)) count++;
+        }
+        return count;
+    }
+
+    private static boolean isValidWord(String token) {
+        int hyphenCnt = 0;
+        int tokenCnt = 0;
+        for (int i = 0; i < token.length(); i++) {
+            char x = token.charAt(i);
+
+            if ( (x == '!' || x == ',' || x == '.' )){
+                if ( (token.length() != 1 && i < token.length()-1) || tokenCnt > 0)return false;
+                else {tokenCnt++;continue;}
+            }
+            if (x == '-'){
+                if ( i == 0 || i == token.length()-1 || hyphenCnt > 0 ) return false;
+                if( !(isLowerCaseLetter(token.charAt(i-1)) && isLowerCaseLetter(token.charAt(i+1))) ) return false;
+                else {hyphenCnt++;continue;}
+            }
+            if ( !isLowerCaseLetter(x) )return false;
+        }
+        return true;
+    }
+
+    private static boolean isLowerCaseLetter(char x){
+        if ( !(x >= 97 && x <=122) )return false;
+        else return true;
+    }
+
+    /// https://leetcode.com/problems/merge-intervals/
+    private static int[][] merge(int[][] intervals) { /// TODO
+        if (intervals == null || intervals.length <= 1) return intervals;
+
+        Object[] objs = Arrays.asList(intervals).stream().sorted(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return Integer.compare(o1[0], o2[0]);
+            }
+        }).toArray();
+
+        List<int[]> sortedList = new ArrayList<>();
+        for (int i = 0; i < objs.length; i++) {
+            sortedList.add(i, (int[]) objs[i]);
+        }
+        List<int[]> outList = new ArrayList<>();
+        for (int i = 0, j=1; i < sortedList.size() && j < sortedList.size(); ) {
+            if (doIntervalsOverlap(sortedList.get(i), sortedList.get(j))){
+                int[] merged = mergeIntervals(sortedList.get(i), sortedList.get(j));
+                sortedList.set(i, merged);
+                j++;
+            }else{
+                outList.add(sortedList.get(i));
+                i=j;
+                j++;
+            }
+        }
+
+        int[][] output = new int[outList.size()][];
+        for (int i = 0; i < outList.size(); i++) {
+            output[i] = outList.get(i);
+        }
+        return output;
+    }
+
+    private static int[] mergeIntervals(int[] first, int[] second) {
+        int start = first[0] <= second[0] ? first[0] : second[0];
+        int end = first[1] < second[1] ? second[1] : first[1];
+        return new int[]{start, end};
+    }
+
+    private static boolean doIntervalsOverlap(int[] first, int[] second) {
+        if (first[0] >= second[0] && first[0] <= second[1]) return true;
+        if (first[1] >= second[0] && first[1] <= second[1]) return true;
+        if (second[0] >= first[0] && second[0] <= first[1]) return true;
+        if (second[1] >= first[0] && second[1] <= first[1]) return true;
+        return false;
+    }
+
+    public static int[] buildArray(int[] nums) {
+        buildArray(nums, 0);
+        return nums;
+    }
+
+    public static int buildArray(int[] nums, int idx) {
+        if (idx == nums.length-1) {
+            int x = nums[idx];
+            nums[idx] = nums[nums[idx]];
+            return x;
+        }
+        else{
+            return buildArray(nums, idx+1);
+        }
+    }
+
+
+    ///https://leetcode.com/problems/decode-string/
+    public static String decodeString(String input) {
+        StringBuilder sb = new StringBuilder("");
+
+        for (int i = 0; i < input.length(); i++) {
+            char x = input.charAt(i);
+            if(isDigit(x)){
+
+            }else{
+//                int loop = Integer.parseInt(x);
+            }
+
+        }
+        return sb.toString();
+    }
+
+    private static boolean isDigit(char x) {
+        return true;
+    }
+
 
     ///https://leetcode.com/problems/coin-change-2/
     public static int change(int amount, int[] coins) {
@@ -150,6 +428,7 @@ public class MediumMain {
     }
 
     /// week 2 day 12
+    /// https://leetcode.com/problems/single-element-in-a-sorted-array/
     private static int singleNonDuplicate(int[] nums) {
         if (nums == null || nums.length == 0) return -1;
         int sum = 0;
@@ -1434,7 +1713,6 @@ public class MediumMain {
         }
     }
 
-
     /// https://leetcode.com/problems/spiral-matrix-ii/
     private static int[][] generateMatrix(int n) {
         if(n < 0) return null;
@@ -1466,23 +1744,6 @@ public class MediumMain {
     }
 
 
-    /// https://leetcode.com/problems/merge-intervals/
-    private static int[][] merge(int[][] intervals) { /// TODO
-        if (intervals == null || intervals.length <= 1) return intervals;
-
-        List<int[]> list = Arrays.asList(intervals).stream().sorted(new Comparator<int[]>() {
-            @Override
-            public int compare(int[] o1, int[] o2) {
-                return o1[0] <= o2[0] ? -1 : 1;
-            }
-        }).collect(Collectors.toList());
-//        int[] range
-        for (int i = 1; i < list.size(); i++) {
-            
-        }
-        int[][] output = new int[list.size()][];
-        return output;
-    }
 
     /// https://leetcode.com/problems/powx-n/
     public double myPow(double x, int n) {
@@ -2125,7 +2386,7 @@ public class MediumMain {
 
 
     /// https://leetcode.com/problems/zigzag-conversion/
-    private static String convertToZigZag(String s, int numRows) {
+    private static String convertToZigZag(String s, int numRows) { // TODO
         StringBuilder sb = new StringBuilder();
         char[][] matrix = new char[numRows][s.length()];
         int idx = 0;
