@@ -17,19 +17,84 @@ public class MediumMain {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
 
-        int[] input = new int[]{-1,-100,3,99};
-        rotate(input, 2);
-//        Object output  = rotate(input, 3);
+        int[][] input = new int[][]{{2,3},{2,2},{3,3},{1,3},{5,7},{2,2},{4,6}};
+        Object output  = merge(input);
 
-//        System.out.println("Answer="+output);
+        System.out.println("Answer="+output);
 
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
     }
 
+    ///
+
+
+    /// https://leetcode.com/problems/merge-intervals/
+    private static int[][] merge(int[][] intervals) {
+        if (intervals == null || intervals.length <= 1) return intervals;
+
+        Arrays.sort(intervals, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return Integer.compare(o1[0], o2[0]);
+            }
+        });
+
+        List<int[]> mergedList = new ArrayList<>(intervals.length);
+
+        for (int i = 1; i < intervals.length; i++) {
+            int[] first = intervals[i-1];
+            int[] second = intervals[i];
+            if ( (first[0] <= second[0] && first[1] >= second[0]) ){ // merge
+                int[] merged = new int[]{(first[0] <= second[0] ? first[0] : second[0]), (first[1] >= second[1] ? first[1] : second[1])  };
+                intervals[i] = merged;
+            }else{
+                mergedList.add(first);
+            }
+            if (i== intervals.length-1) mergedList.add(intervals[i]);
+        }
+
+        int[][] output = new int[mergedList.size()][];
+        for (int i = 0; i < mergedList.size(); i++) {
+            output[i] = mergedList.get(i);
+        }
+        return output;
+    }
+
+    private static int[][] mergeII(int[][] intervals) {
+        if (intervals == null || intervals.length <= 1) return intervals;
+
+        Arrays.sort(intervals, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return Integer.compare(o1[0], o2[0]);
+            }
+        });
+
+        List<int[]> mergedList = new ArrayList<>();
+
+        for (int i = 1; i < intervals.length; i++) {
+            int[] first = intervals[i-1];
+            int[] second = intervals[i];
+            if ( (first[0] <= second[0] && first[1] >= second[0]) || (second[0] <= first[0] && second[1] >= first[0] ) ){ // merge
+                int[] merged = new int[]{(first[0] <= second[0] ? first[0] : second[0]), (first[1] >= second[1] ? first[1] : second[1])  };
+                intervals[i] = merged;
+            }else{
+                mergedList.add(first);
+            }
+            if (i== intervals.length-1) mergedList.add(intervals[i]);
+        }
+
+        int[][] output = new int[mergedList.size()][];
+        for (int i = 0; i < mergedList.size(); i++) {
+            output[i] = mergedList.get(i);
+        }
+        return output;
+    }
+
 
     /// https://leetcode.com/problems/rotate-array/
-    public static void rotate(int[] nums, int k) {
+    public static void rotate(int[] nums, int k) { /// TODO
         if (nums == null || nums.length == 0) return;
         int intermediate = nums[0];
         int idx = 0;
@@ -213,41 +278,6 @@ public class MediumMain {
     private static boolean isLowerCaseLetter(char x){
         if ( !(x >= 97 && x <=122) )return false;
         else return true;
-    }
-
-    /// https://leetcode.com/problems/merge-intervals/
-    private static int[][] merge(int[][] intervals) { /// TODO
-        if (intervals == null || intervals.length <= 1) return intervals;
-
-        Object[] objs = Arrays.asList(intervals).stream().sorted(new Comparator<int[]>() {
-            @Override
-            public int compare(int[] o1, int[] o2) {
-                return Integer.compare(o1[0], o2[0]);
-            }
-        }).toArray();
-
-        List<int[]> sortedList = new ArrayList<>();
-        for (int i = 0; i < objs.length; i++) {
-            sortedList.add(i, (int[]) objs[i]);
-        }
-        List<int[]> outList = new ArrayList<>();
-        for (int i = 0, j=1; i < sortedList.size() && j < sortedList.size(); ) {
-            if (doIntervalsOverlap(sortedList.get(i), sortedList.get(j))){
-                int[] merged = mergeIntervals(sortedList.get(i), sortedList.get(j));
-                sortedList.set(i, merged);
-                j++;
-            }else{
-                outList.add(sortedList.get(i));
-                i=j;
-                j++;
-            }
-        }
-
-        int[][] output = new int[outList.size()][];
-        for (int i = 0; i < outList.size(); i++) {
-            output[i] = outList.get(i);
-        }
-        return output;
     }
 
     private static int[] mergeIntervals(int[] first, int[] second) {

@@ -6,6 +6,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -20,10 +21,30 @@ public class TestMain {
     static int x = 4;
     public static void main(String[] args)  {
         System.out.println("START");
+        int x = 5;
+        double y = -5.234236;
+        System.out.println(Math.abs(y));
+//        testArrayList();
 
-        testInnerClasses1();
-        
         System.out.println("END");
+    }
+
+
+    private static void testArrayList() {
+        ArrayList<Integer> list = new ArrayList<>();
+        list.add(new Integer(1));
+        list.add(null);
+        list.add(new Integer(1));
+        list.add(null);
+        list.add(new Integer(2));
+        list.add(null);
+        list.add(new Integer(4));
+        list.add(null);
+        list.add(new Integer(15));
+        for (Integer x : list) {
+            System.out.println("var="+x);
+        }
+        System.out.println("Size="+list.size());
     }
 
     private static void testInnerClasses1() {
@@ -34,6 +55,7 @@ public class TestMain {
         Outer.StatInner sinner = new Outer.StatInner("");
         sinner.testTest();
     }
+
 
 
     static int reductionCost(int[] num) {
