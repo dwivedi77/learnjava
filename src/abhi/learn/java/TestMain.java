@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 
 import static abhi.learn.java.core.lang.Outer.*;
 
@@ -23,14 +24,39 @@ public class TestMain {
         System.out.println("START");
         int x = 5;
         double y = -5.234236;
-        System.out.println(Math.abs(y));
-//        testArrayList();
+        System.out.println(null + "ab");
+        testPriorityQueue();
 
         System.out.println("END");
     }
 
+    private static void testPriorityQueue(){
+        int[] input = new int[]{1000,999,993,900,899,850,800,755,600,222,166,127,99};
 
-    private static void testArrayList() {
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        for (int i = 0; i < input.length; i++) {
+            pq.add(input[i]);
+            System.out.println("");
+        }
+        while (!pq.isEmpty()){
+            Integer x = pq.poll();
+            System.out.println("x:"+x);
+        }
+    }
+
+    private static void testLexagraphicComparision() {
+        String s1 = "b";
+        String s2 = "ba";
+        int comp = s1.compareTo(s2);
+        if (comp < 1){
+            System.out.println(s1+" is smaller than "+s2);
+        }else{
+            System.out.println(s2+" is smaller or equal than "+s1);
+        }
+    }
+
+
+        private static void testArrayList() {
         ArrayList<Integer> list = new ArrayList<>();
         list.add(new Integer(1));
         list.add(null);

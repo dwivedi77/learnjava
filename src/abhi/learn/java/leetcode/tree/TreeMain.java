@@ -26,6 +26,18 @@ public class TreeMain {
         }
     }
 
+    /**
+     * Definition for singly-linked list.
+     * */
+     public class ListNode {
+         int val;
+         ListNode next;
+         ListNode() {}
+         ListNode(int val) { this.val = val; }
+         ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+     }
+
+
     public boolean isLeaf(TreeNode node){
         return (node.left == null && node.right == null);
     }
@@ -39,12 +51,12 @@ public class TreeMain {
         long startTime = System.currentTimeMillis();
         TreeMain main = new TreeMain();
 
-        String input1 = "25,1,3,1,3,0,2";
+        String input1 = "1,2,3,4";
         TreeNode root = main.createTreeNode(input1);
 
 //        main.morrisInOrderTraversal(root);
 //        TreeNode node = main.createTreeNode("4");
-        Object output = main.smallestFromLeaf(root);
+        Object output = main.rightSideView(root);
         System.out.println("Answer=" + output);
 
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
@@ -52,21 +64,129 @@ public class TreeMain {
 
     }
 
-    /// https://leetcode.com/problems/smallest-string-starting-from-leaf/
-    public String smallestFromLeaf(TreeNode root) { /// TODO
-        List<Integer> list = new ArrayList<>();
-        smallestFromLeafHelper(root, list);
-        StringBuilder sb = new StringBuilder();
-        for (int i = list.size()-1; i >=0 ; i--) {
-            sb.append( (char)('a'+list.get(i)) );
-        }
-        return sb.toString();
+    /// https://leetcode.com/problems/binary-tree-right-side-view/
+    public List<Integer> rightSideView(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        if (root == null) return result;
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(root.val);
+
+        return result;
     }
 
-    public int smallestFromLeafHelper(TreeNode node, List<Integer> list) {
-        if (node.left == null && node.right == null) return node.val;
-        list.add(Math.min(smallestFromLeafHelper(node.left, list), smallestFromLeafHelper(node.right, list)));
-        return node.val;
+    /// https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/
+    public TreeNode sortedListToBST(ListNode head) {
+        if (head == null) return null;
+        ///finding the mid
+        ListNode mid = head;
+        ListNode end = head;
+
+        List<Integer> values = new ArrayList<>();
+        while (head != null){
+            values.add(head.val);
+            head = head.next;
+        }
+
+        TreeNode root = sortedListToBST(values, 0, values.size()-1);
+        return root;
+    }
+
+    public TreeNode sortedListToBST(List<Integer> nums, int start, int end){
+        if (start >= end) return null;
+        int mid = start + (end-start)/2;
+        TreeNode node = new TreeNode(nums.get(mid));
+
+        node.left = sortedListToBST(nums, start, mid);
+        node.right = sortedListToBST(nums, mid+1, end);
+        return node;
+    }
+
+    public TreeNode sortedArrayToBSTII(int[] nums, int start, int end){
+        if (start >= end) return null;
+        int mid = start + (end-start)/2;
+        TreeNode node = new TreeNode(nums[mid]);
+
+        node.left = sortedArrayToBSTII(nums, start, mid);
+        node.right = sortedArrayToBSTII(nums, mid+1, end);
+        return node;
+    }
+
+    /// https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (root == null) return result;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        boolean reverse = false;
+        while (queue.size() > 0){
+            int size = queue.size();
+            List<Integer> level = new ArrayList<>();;
+            while (0 < size--){
+                TreeNode node = queue.poll();
+                if (reverse)
+                    level.add(0,node.val);
+                else
+                    level.add(node.val);
+                if (node.left != null) queue.add(node.left);
+                if (node.right != null) queue.add(node.right);
+            }
+            reverse = !reverse;
+            result.add(level);
+        }
+        return result;
+    }
+
+
+    /// https://leetcode.com/problems/smallest-string-starting-from-leaf/
+    public String smallestFromLeaf(TreeNode root) {
+        List<String> allPaths = new LinkedList<>();
+        smallestFromLeafHelper(root, allPaths, "");
+        return allPaths.get(0);
+    }
+
+    public void smallestFromLeafHelper(TreeNode node, List<String> allPaths, String parent) {
+        if (node == null) return;
+
+        String value = (char)('a'+node.val)+parent;
+        if (node.left == null && node.right == null) {
+            if (allPaths.size() == 0)
+                allPaths.add(value);
+            else {
+                int comp = allPaths.get(0).compareTo(value);
+                if (comp <= 0) return;
+                else {
+                    allPaths.remove(0);
+                    allPaths.add(value);
+                }
+            }
+            return;
+        }
+        smallestFromLeafHelper(node.left, allPaths, value);
+        smallestFromLeafHelper(node.right, allPaths, value);
+    }
+
+    public String smallestFromLeafHelperII(TreeNode node) {
+        if (node == null) return null;
+
+        String value = (char)('a'+node.val)+"";
+
+        if (node.left == null && node.right == null)
+            return value;
+
+        String left = smallestFromLeafHelperII(node.left);
+        String right = smallestFromLeafHelperII(node.right);
+
+        if (left == null) return (right == null ? value : right+value);
+        if (right == null) return (left == null ? value : left+value);
+
+        left = left+value;
+        right = right+value;
+
+        int comp = left.compareTo(right);
+        if (comp < 1)
+            return left;
+        else
+            return right;
     }
 
     /// https://leetcode.com/problems/sum-root-to-leaf-numbers/
@@ -126,28 +246,12 @@ public class TreeMain {
         if (root == null) return;
         System.out.print("[");
         TreeNode curr = root;
-        TreeNode lefty = null;
-
-        while (curr != null){
-
-            if (curr.left != null){
-                lefty = curr.left;
-                TreeNode temp = lefty;
-                while (temp.right != null){
-                    temp = temp.right;
-                }
-                temp.right = curr; //// false link to be removed later
-            }else {//// no left node left
-                System.out.println(curr.val+",");
-//                curr =
-            }
-        }
 
 //        System.out.println("");
     }
 
     /// https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/
-    public TreeNode sortedArrayToBST(int[] nums) {
+    public TreeNode sortedListToBST(int[] nums) {
         if (nums == null || nums.length == 0) return null;
         int mid = nums.length/2;
         TreeNode node = new TreeNode(nums[mid]);
