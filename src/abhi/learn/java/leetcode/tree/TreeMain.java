@@ -9,23 +9,6 @@ import java.util.*;
  */
 public class TreeMain {
 
-    class TreeNode {
-        int val;
-        TreeNode left;
-        TreeNode right;
-//        TreeNode parent;
-        TreeNode() {
-        }
-        TreeNode(int val) {
-            this.val = val;
-        }
-        TreeNode(int val, TreeNode left, TreeNode right) {
-            this.val = val;
-            this.left = left;
-            this.right = right;
-        }
-    }
-
     /**
      * Definition for singly-linked list.
      * */
@@ -51,12 +34,12 @@ public class TreeMain {
         long startTime = System.currentTimeMillis();
         TreeMain main = new TreeMain();
 
-        String input1 = "1,2,3,4";
+        String input1 = "3,2,3,null,3,null,1";
         TreeNode root = main.createTreeNode(input1);
 
 //        main.morrisInOrderTraversal(root);
 //        TreeNode node = main.createTreeNode("4");
-        Object output = main.rightSideView(root);
+        Object output = main.rob(root);
         System.out.println("Answer=" + output);
 
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
@@ -64,12 +47,62 @@ public class TreeMain {
 
     }
 
+    //// https://leetcode.com/problems/serialize-and-deserialize-binary-tree/
+
+    /// https://leetcode.com/problems/house-robber-iii/
+    public int rob(TreeNode root) { /// TODO improve on it.
+        if (root == null) return 0;
+
+        HashMap<TreeNode, Integer> visited = new HashMap<>();
+        return robIIIHelper(root, visited);
+    }
+
+    public int robIIIHelper(TreeNode root, HashMap<TreeNode, Integer> visited) {
+        if (visited.containsKey(root)) return visited.get(root);
+        if (isLeaf(root)) {
+            visited.put(root, root.val);
+            return root.val;
+        }
+        if (root.right != null)visited.put(root.right, robIIIHelper(root.right, visited));
+        if (root.left != null)visited.put(root.left, robIIIHelper(root.left, visited));
+
+        return Math.max(rob(root.right) + rob(root.left),
+                root.val + rob(root.right == null ? null : root.right.right) + rob(root.right == null ? null : root.right.left) + rob(root.left == null ? null : root.left.right) + rob(root.left == null ? null : root.left.left));
+    }
+
+
+    /// https://leetcode.com/problems/kth-smallest-element-in-a-bst/
+    public int kthSmallest(TreeNode root, int k) {
+        List<Integer> list = new ArrayList<>();
+        kthSmallestHelper(root, list);
+        Collections.sort(list);
+        return list.get(k+1);
+    }
+
+    public void kthSmallestHelper(TreeNode node, List<Integer> list) {
+        if (node == null) return;
+        list.add(node.val);
+        kthSmallestHelper(node.left, list);
+        kthSmallestHelper(node.right, list);
+    }
+
     /// https://leetcode.com/problems/binary-tree-right-side-view/
     public List<Integer> rightSideView(TreeNode root) {
         List<Integer> result = new ArrayList<>();
         if (root == null) return result;
-        Queue<Integer> queue = new LinkedList<>();
-        queue.add(root.val);
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()){
+            int size = queue.size();
+            while (0 < size--){
+                TreeNode node = queue.poll();
+                if (size == 0)
+                    result.add(node.val);
+
+                if (node.left != null)queue.add(node.left);
+                if (node.right != null)queue.add(node.right);
+            }
+        }
 
         return result;
     }
@@ -139,10 +172,20 @@ public class TreeMain {
 
     /// https://leetcode.com/problems/smallest-string-starting-from-leaf/
     public String smallestFromLeaf(TreeNode root) {
-        List<String> allPaths = new LinkedList<>();
+        PriorityQueue<String> allPaths = new PriorityQueue<>();
         smallestFromLeafHelper(root, allPaths, "");
-        return allPaths.get(0);
+        return allPaths.poll();
     }
+    public void smallestFromLeafHelper(TreeNode node, PriorityQueue<String> allPaths, String parent) {
+        if (node == null) return;
+        String value = (char)('a'+node.val)+parent;
+        if (node.left == null && node.right == null){
+            allPaths.add(value);
+        }
+        smallestFromLeafHelper(node.left, allPaths, value);
+        smallestFromLeafHelper(node.right, allPaths, value);
+    }
+
 
     public void smallestFromLeafHelper(TreeNode node, List<String> allPaths, String parent) {
         if (node == null) return;
@@ -839,7 +882,7 @@ public class TreeMain {
 
     }
 
-    private TreeNode createTreeNode(String input) {
+    public TreeNode createTreeNode(String input) {
         if (input == null || "".equals(input.trim())) return  null;
         input = input.trim();
 
@@ -883,3 +926,4 @@ public class TreeMain {
     }
 
 }
+

@@ -1,5 +1,7 @@
 package abhi.learn.java.leetcode.easy;
 
+import abhi.learn.java.leetcode.tree.TreeMain;
+
 import java.math.BigInteger;
 import java.util.*;
 
@@ -19,12 +21,43 @@ public class EasyMain2 {
 //        Object output = isAnagram2("anagram","aganram");
 
 
-        int[] input = new int[]{4,9,5};
-        int[] input2 = new int[]{9,4,9,8,4};
-        Object output = intersection(input, input2);
+        ListNode l1 = createLinkedList(new int[]{1,2,4});
+        ListNode l2 = createLinkedList(new int[]{1,3,4});
+        Object output = mergeTwoListsII(l1, l2);
         System.out.println("output = " + output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
+
+
+    /// https://leetcode.com/problems/merge-two-sorted-lists/
+    public static ListNode mergeTwoListsII(ListNode l1, ListNode l2) {
+        if (l1 == null) return l2;
+        if (l2 == null) return l1;
+        ListNode res = l1.val <= l2.val ? l1 : l2;
+        if (l1.val <= l2.val){
+            res = l1;
+            l1 = l1.next;
+        }else {
+            res = l2;
+            l2 = l2.next;
+        }
+        ListNode temp = res;
+        while (l1 != null && l2 != null){
+            if (l1.val < l2.val){
+                res.next = l1;
+                l1 = l1.next;
+            }else {
+                res.next = l2;
+                l2 = l2.next;
+            }
+            res = res.next;
+        }
+        if (l1 != null)
+            res.next = l1;
+        if (l2 != null)
+            res.next = l2;
+        return temp;
     }
 
 
