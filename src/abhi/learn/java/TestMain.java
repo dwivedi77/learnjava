@@ -6,8 +6,10 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 
 import static abhi.learn.java.core.lang.Outer.*;
 
@@ -20,10 +22,55 @@ public class TestMain {
     static int x = 4;
     public static void main(String[] args)  {
         System.out.println("START");
+        int x = 5;
+        double y = -5.234236;
+        System.out.println(null + "ab");
+        testPriorityQueue();
 
-        testInnerClasses1();
-        
         System.out.println("END");
+    }
+
+    private static void testPriorityQueue(){
+        int[] input = new int[]{1000,999,993,900,899,850,800,755,600,222,166,127,99};
+
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        for (int i = 0; i < input.length; i++) {
+            pq.add(input[i]);
+            System.out.println("");
+        }
+        while (!pq.isEmpty()){
+            Integer x = pq.poll();
+            System.out.println("x:"+x);
+        }
+    }
+
+    private static void testLexagraphicComparision() {
+        String s1 = "b";
+        String s2 = "ba";
+        int comp = s1.compareTo(s2);
+        if (comp < 1){
+            System.out.println(s1+" is smaller than "+s2);
+        }else{
+            System.out.println(s2+" is smaller or equal than "+s1);
+        }
+    }
+
+
+        private static void testArrayList() {
+        ArrayList<Integer> list = new ArrayList<>();
+        list.add(new Integer(1));
+        list.add(null);
+        list.add(new Integer(1));
+        list.add(null);
+        list.add(new Integer(2));
+        list.add(null);
+        list.add(new Integer(4));
+        list.add(null);
+        list.add(new Integer(15));
+        for (Integer x : list) {
+            System.out.println("var="+x);
+        }
+        System.out.println("Size="+list.size());
     }
 
     private static void testInnerClasses1() {
@@ -34,6 +81,7 @@ public class TestMain {
         Outer.StatInner sinner = new Outer.StatInner("");
         sinner.testTest();
     }
+
 
 
     static int reductionCost(int[] num) {

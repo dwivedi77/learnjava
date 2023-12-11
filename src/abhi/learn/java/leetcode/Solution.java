@@ -1,9 +1,7 @@
 package abhi.learn.java.leetcode;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -11,24 +9,44 @@ import java.util.stream.Collectors;
  */
 public class Solution {
 
-    private static int guess;
+    private static int pick;
     public static void main(String[] args) {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
 
-        MyLinkedList my = new MyLinkedList();
-        int zero = my.get(0);
-        my.addAtIndex(1,2);
-        zero = my.get(0);
-        int one = my.get(1);
-        my.addAtIndex(0,1);
-        zero = my.get(0);
-        one = my.get(1);
-
+        pick = 15;
+        int result = guessNumber(10);
+        System.out.println("result = " + result);
         System.out.println("Time Taken="+(System.currentTimeMillis()-startTime));
         System.out.println("END");
     }
 
+    /// https://leetcode.com/problems/guess-number-higher-or-lower/
+    private static int guessNumber(int n) {
+        int start = 1, end = n;
+        int result = guessNumber(n, 1, n);
+        return result;
+    }
+
+    private static int guessNumber(int n, int start, int end) {
+        int mid = start + (end-start)/2;
+        int guess = guess(mid);
+        if (guess == 0){
+            return mid;
+        }else if (guess > 0){
+            return guessNumber(n, mid+1, end);
+        }else {
+            return guessNumber(n, start, mid);
+        }
+    }
+
+    private static int guess(int num){
+        if (num > pick)
+            return -1;
+        else if (num < pick)
+            return 1;
+        else return 0;
+    }
 
     ///https://leetcode.com/problems/distant-barcodes/
     private static int[] rearrangeBarcodes(int[] barcodes) {
@@ -64,33 +82,4 @@ public class Solution {
 
     }
 
-    private static int guessNumber(int n) {
-        int x = 0;
-        int lower = 1;
-        int floor = n;
-        int result = floor/2;
-        int test = guess(result);
-        while (test != 0){
-            x++;
-            if (test > 0){
-                floor = result;
-                result = (floor)/2;
-                test = guess(result);
-            }else if (test < 0){
-                lower = result;
-                result = lower + (floor - lower)/2;
-                test = guess(result);
-            }
-        }
-        System.out.println("Total iteration="+x);
-        return result;
-    }
-
-    private static int guess(int num){
-        if (num < guess)
-            return -1;
-        else if (num > guess)
-            return 1;
-        else return 0;
-    }
 }

@@ -1,5 +1,7 @@
 package abhi.learn.java.leetcode.easy;
 
+import abhi.learn.java.leetcode.tree.TreeMain;
+
 import java.math.BigInteger;
 import java.util.*;
 
@@ -15,13 +17,103 @@ public class EasyMain2 {
 //        char[][] dictionary = new char[][]{{'A','B','C','A', 'R'},{'S','F','C','M','U'},{'A','D','E','Y','E'},{'A','X','E','Z','E'}};
 //        int[][] matrix = new int[][]{{1,4,7,11,15},{2,5,8,12,19},{3,6,9,16,22},{10,13,14,17,24},{18,21,23,26,30}};
 //        int[][] matrix = new int[][]{{1,3,5,7,9},{2,4,6,8,10},{11,13,15,17,19},{12,14,16,18,20},{21,22,23,24,25}};
-        int[][] matrix = new int[][]{{-1,3}};
-        Object output = isAnagram2("anagram",
-                "aganram");
+//        int[][] matrix = new int[][]{{-1,3}};
+//        Object output = isAnagram2("anagram","aganram");
+
+
+        ListNode l1 = createLinkedList(new int[]{1,2,4});
+        ListNode l2 = createLinkedList(new int[]{1,3,4});
+        Object output = mergeTwoListsII(l1, l2);
         System.out.println("output = " + output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
     }
+
+
+    /// https://leetcode.com/problems/merge-two-sorted-lists/
+    public static ListNode mergeTwoListsII(ListNode l1, ListNode l2) {
+        if (l1 == null) return l2;
+        if (l2 == null) return l1;
+        ListNode res = l1.val <= l2.val ? l1 : l2;
+        if (l1.val <= l2.val){
+            res = l1;
+            l1 = l1.next;
+        }else {
+            res = l2;
+            l2 = l2.next;
+        }
+        ListNode temp = res;
+        while (l1 != null && l2 != null){
+            if (l1.val < l2.val){
+                res.next = l1;
+                l1 = l1.next;
+            }else {
+                res.next = l2;
+                l2 = l2.next;
+            }
+            res = res.next;
+        }
+        if (l1 != null)
+            res.next = l1;
+        if (l2 != null)
+            res.next = l2;
+        return temp;
+    }
+
+
+    /// https://leetcode.com/problems/squares-of-a-sorted-array/
+    public int[] sortedSquares(int[] nums) {
+        if (nums == null || nums.length == 0) return nums;
+        int[] result = new int[nums.length]; int idx = nums.length-1;
+        int i = 0, j = nums.length-1;
+        while (i<=j){
+            int sqI = nums[i]*nums[i];
+            int sqJ = nums[j]*nums[j];
+
+            if (sqI >= sqJ){
+                result[idx--] = sqI;
+                i++;
+            }else{
+                result[idx--] = sqJ;
+                j--;
+            }
+        }
+        return result;
+    }
+
+
+    public static boolean containsDuplicate(int[] nums) {
+        HashSet<Integer> set = new HashSet<>();
+        for (int x: nums) {
+            if (!set.add(x))
+                return true;
+        }
+        return false;
+    }
+
+
+    /// https://leetcode.com/problems/intersection-of-two-arrays/
+    public static int[] intersection(int[] nums1, int[] nums2) {
+
+        HashSet<Integer> set1 = new HashSet<>();
+        for (int x: nums1) {
+            set1.add(x);
+        }
+        HashSet<Integer> results = new HashSet<>();
+        for (int x: nums2) {
+            if (set1.contains(x))
+                results.add(x);
+        }
+
+        int[] res = new int[results.size()];
+        Iterator itr = results.iterator();
+        int i = 0;
+        while (itr.hasNext()){
+            res[i++] = (int) itr.next();
+        }
+        return res;
+    }
+
 
     ///https://leetcode.com/problems/valid-anagram/
     private static boolean isAnagram(String s, String t) {
