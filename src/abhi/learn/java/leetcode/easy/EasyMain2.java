@@ -21,14 +21,129 @@ public class EasyMain2 {
 //        Object output = isAnagram2("anagram","aganram");
 
 
-        ListNode l1 = createLinkedList(new int[]{1,2,4});
-        ListNode l2 = createLinkedList(new int[]{1,3,4});
-        Object output = mergeTwoListsII(l1, l2);
+        Object output = totalMoney(4);
         System.out.println("output = " + output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
     }
 
+    /// https://leetcode.com/problems/calculate-money-in-leetcode-bank/
+    public static int totalMoney(int n) {
+        int sum = 0; int week = 0;
+        for (int i = 1; i <= n; i++) {
+            if ( (i-1)%7 == 0) week++;
+            sum = sum + (week + (i-1)%7);
+
+        }
+        return sum;
+    }
+
+
+    /// https://leetcode.com/problems/path-crossing/description/
+    public static boolean isPathCrossing(String path) {
+        int[] coordinates = new int[]{0,0};
+        Set<Integer> visited = new HashSet<>();
+        visited.add(0);
+        for (int i = 0; i < path.length(); i++) {
+            char x = path.charAt(i);
+            switch (x){
+                case 'N': coordinates[1]++; break;
+                case 'S': coordinates[1]--; break;
+                case 'E': coordinates[0]++; break;
+                case 'W': coordinates[0]--; break;
+            }
+            int val = coordinates[0]*10000 + coordinates[1];
+            if (visited.contains(val))
+                return true;
+            else visited.add(val);
+        }
+        return false;
+    }
+
+    /// https://leetcode.com/problems/array-partition/
+    public static int arrayPairSum(int[] nums) {
+        Arrays.sort(nums);
+        int sum = 0;
+        for (int i = 0; i < nums.length; i=i+2) {
+            sum += nums[i];
+        }
+        return sum;
+    }
+
+
+    ///https://leetcode.com/problems/minimum-cost-of-buying-candies-with-discount/
+    public static int minimumCost(int[] cost) {
+        Arrays.sort(cost);
+        int minCost = 0;
+        for (int i = cost.length-1; i >=0 ; i--) {
+            if ((cost.length-i)%3 != 0){
+                minCost += cost[i];
+            }
+        }
+        return minCost;
+    }
+
+    /// https://leetcode.com/problems/longest-even-odd-subarray-with-threshold/
+    public static int longestAlternatingSubarray(int[] nums, int threshold) {
+        int len = 0; int longest = 0; boolean nextOneEven = true;
+        for (int i = 0; i < nums.length; i++) {
+            if(nums[i] > threshold){
+                if (len > longest) longest = len;
+                len = 0;
+                nextOneEven = true;
+                continue;
+            }
+            if (nextOneEven){
+                if (nums[i]%2 == 0) {
+                    len++;
+                    nextOneEven = !nextOneEven;
+                }
+                else{
+                    len = 0;
+                    nextOneEven = true;
+                }
+            }else {//nextoneOdd
+                if (nums[i]%2 == 1) {
+                    len++;
+                    nextOneEven = !nextOneEven;
+                }
+                else{
+                    len = 1;
+                    nextOneEven = false;
+                }
+            }
+            if (len > longest) longest = len;
+        }
+        return longest;
+    }
+
+    /// https://leetcode.com/problems/plus-one/
+    public static int[] plusOne(int[] digits) {
+        if(digits == null || digits.length == 0) return new int[0];
+
+        int carryOver = 1;
+        int sum = 0;
+        for (int i = digits.length-1; i >=0 ; i--) {
+            sum = digits[i]+carryOver;
+            if (sum > 9) {
+                carryOver = 1;
+                digits[i] = sum%10;
+            }
+            else {
+                carryOver = 0;
+                digits[i] = sum;
+            }
+        }
+        if (carryOver > 0){
+            int[] retVal = new int[1+digits.length];
+            retVal[0] = carryOver;
+            for (int i = 1; i < retVal.length; i++) {
+                retVal[i] = digits[i-1];
+            }
+            return retVal;
+        }else return digits;
+
+    }
 
     /// https://leetcode.com/problems/merge-two-sorted-lists/
     public static ListNode mergeTwoListsII(ListNode l1, ListNode l2) {

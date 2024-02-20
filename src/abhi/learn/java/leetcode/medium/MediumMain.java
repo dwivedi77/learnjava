@@ -22,12 +22,178 @@ public class MediumMain {
         int[][] slots1 = {{10,50},{60,120},{140,210}};
         int[][] slots2 = {{0,15},{60,70}};
 
-        Object output = minAvailableDuration(slots1, slots2, 12);
+        Object output = jump(new int[]{1});
         System.out.println("Answer="+output);
 
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
     }
+
+    /// https://leetcode.com/problems/jump-game-ii/description/
+    public static int jump(int[] nums) {
+        int minJump = 0;
+        if(nums == null || nums.length <= 1) return minJump;
+        int jump = 0;
+        for (int i = 0; i < nums.length; i++) {
+             jump += nums[i];
+             minJump = nums[i] == 0? minJump : 1+minJump;
+             if (jump >= nums.length-1) break;
+        }
+        return minJump;
+    }
+
+
+    ///https://leetcode.com/problems/max-increase-to-keep-city-skyline/description/
+    public static int maxIncreaseKeepingSkyline(int[][] grid) {
+        int sum = 0;
+        int n = grid.length;
+        Map<Integer, Integer> rowMap = new HashMap<>();
+        Map<Integer, Integer> colMap = new HashMap<>();
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                int rowMax = 0; int colMax = 0;
+                if (rowMap.containsKey(i))
+                    rowMax = rowMap.get(i);
+                else{
+                    int r = 0;
+                    while (r<n){
+                        rowMax = rowMax > grid[i][r] ? rowMax : grid[i][r];
+                        r++;
+                    }
+                    rowMap.put(i, rowMax);
+                }
+
+                if (colMap.containsKey(j))
+                    colMax = colMap.get(j);
+                else{
+                    int r = 0;
+                    while (r<n){
+                        colMax = colMax > grid[r][j] ? colMax : grid[r][j];
+                        r++;
+                    }
+                    colMap.put(j, colMax);
+                }
+
+                sum += (Math.min(rowMax, colMax) - grid[i][j]);
+            }
+        }
+        return sum;
+    }
+
+
+        public static int maxIncreaseKeepingSkyline_2(int[][] grid) {
+        int sum = 0;
+        Map<Integer, Integer> rowMax = new HashMap<>();
+        Map<Integer, Integer> colMax = new HashMap<>();
+
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if(rowMax.containsKey(i)){
+                    rowMax.put(i, Math.max(rowMax.get(i), grid[i][j]));
+                }else rowMax.put(i, grid[i][j]);
+                if(colMax.containsKey(j)){
+                    colMax.put(j, Math.max(colMax.get(j), grid[i][j]));
+                }else colMax.put(j, grid[i][j]);
+            }
+        }
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                sum += (Math.min(rowMax.get(i), colMax.get(j)) - grid[i][j]);
+            }
+        }
+        return sum;
+    }
+
+    /// https://leetcode.com/problems/find-players-with-zero-or-one-losses/
+    public static List<List<Integer>> findWinners(int[][] matches) {
+        List<List<Integer>> output = new ArrayList<>();
+        Map<Integer, Integer> count = new HashMap<>();
+
+        Set<Integer> noLoss = new HashSet<>();
+        List<Integer> oneLoss = new ArrayList<>();
+
+        for (int i = 0; i < matches.length; i++) {
+            if (count.containsKey(matches[i][1])){
+                count.put(matches[i][1], 1+count.get(matches[i][1]));
+            }else {
+                count.put(matches[i][1], 1);
+            }
+        }
+        for (int i = 0; i < matches.length; i++) {
+            if (!count.containsKey(matches[i][0]))
+                noLoss.add(matches[i][0]);
+        }
+        for (Integer key: count.keySet()) {
+            if (count.get(key) == 1)
+                oneLoss.add(key);
+        }
+        List<Integer> noLossList = new ArrayList<>(noLoss);
+//        Collections.sort(noLossList);
+//        Collections.sort(oneLoss);
+        output.add(noLossList);
+        output.add(oneLoss);
+        return output;
+    }
+
+    /// https://leetcode.com/problems/divide-array-into-arrays-with-max-difference/
+    public static int[][] divideArray(int[] nums, int k) {
+        Arrays.sort(nums);
+        int[][] output = new int[nums.length%3 != 0 ? 1 + nums.length/3 : nums.length/3][3];
+        for (int i = 0; i < nums.length; i++) {
+            if ( i%3==2 && (nums[i]-nums[i-1] > k || nums[i]-nums[i-2] > k || nums[i-1]-nums[i-2] > k)){
+                return new int[0][];
+            }
+            output[i/3][i%3]=nums[i];
+        }
+
+        return output;
+    }
+
+    /// https://leetcode.com/problems/convert-an-array-into-a-2d-array-with-conditions/
+    public static List<List<Integer>> findMatrix(int[] nums) {
+        List<List<Integer>> output = new ArrayList<>();
+        Map<Integer, Integer> included = new HashMap<>(); // num/index
+        List<Integer> firstList = new ArrayList<>();
+        output.add(firstList);
+        for (int i: nums) {
+                if (included.get(nums[i]) == null){
+                    output.get(0).add(nums[i]);
+                    included.put(nums[i], 0);
+                }else{
+                    int idx = 1+ included.get(nums[i]);
+                    if (output.size() < idx){
+                        List<Integer> list = new ArrayList<>();
+                        list.add(nums[i]);
+                        output.add(list);
+                    }else{
+                        output.get(idx).add(nums[i]);
+                    }
+                }
+        }
+        return output;
+    }
+
+    /// https://leetcode.com/problems/group-the-people-given-the-group-size-they-belong-to/
+    public static List<List<Integer>> groupThePeople(int[] groupSizes) {
+        List<List<Integer>> output = new ArrayList<>();
+        Map<Integer, List<Integer>> map = new HashMap<>();
+
+        for (int i = 0; i < groupSizes.length; i++) {
+            List<Integer> availableList = map.get(groupSizes[i]);
+            if (availableList != null){
+                availableList.add(i);
+            }else{
+                availableList = new ArrayList<>(groupSizes[i]);
+                availableList.add(i);
+                map.put(groupSizes[i], availableList);
+            }
+            if (availableList.size() == groupSizes[i]) {
+                output.add(map.remove(groupSizes[i]));
+            }
+        }
+        return output;
+    }
+
 
     //// https://leetcode.com/problems/meeting-scheduler/
     public static List<Integer> minAvailableDuration(int[][] slots1, int[][] slots2, int duration) {

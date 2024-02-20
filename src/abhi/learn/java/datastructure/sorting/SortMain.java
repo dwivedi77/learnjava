@@ -8,134 +8,118 @@ import java.util.Arrays;
 public class SortMain {
 
     public static void main(String[] args) {
-//        int[] unsorted = {25, 10, 5, 3, 8, 18, 9, 11};
-        int[] unsorted = {25, 10, 8, 67, 11, 3, 99};
-        int[] sorted = mergesort(unsorted);
-        System.out.println("sorted = " + Arrays.toString(unsorted));
+//        int[] unsorted = {2,1,1,1};
+//        int[] unsorted = {25, 10, 8, 67, 11, 3, 99, -1, 4, 36, 100, 47, 85, -10, -10, 123, 45};
+        int[] unsorted = {0, 0, 0, -1,-2,5, 3, 1000};
+//        quickSort(unsorted, 0, unsorted.length-1);
+//        mergesort(unsorted, 0, unsorted.length);
+        int[] sorted = new int[unsorted.length];
+        mergesort(unsorted, 0, unsorted.length-1, sorted);
+//        merge(unsorted, 0, 3, 4, 7, sorted);
+        System.out.println("sorted = " + Arrays.toString(sorted));
     }
 
-    private static int[] mergesort(int[] unsorted) {
-        int[] sorted = new int[unsorted.length];
+    //this implementation works. 01_15_2024
+    private static void quickSort(int[] unsorted, int begin, int end){
+        if (begin>=end) return;
+        int pivot = end;
+        int i = begin-1;
+        for (int j = begin; j < end; j++) {
+            if (unsorted[j] < unsorted[pivot]){
+                i++;
+                swap(unsorted, i, j);
+            }
+        }
+        i++;
+        swap(unsorted, i, pivot);
+        quickSort(unsorted, begin, i-1);
+        quickSort(unsorted, i+1, end);
+    }
 
-        int split = unsorted.length/2;
-        splitSortMerge(unsorted, 0, split-1, split, unsorted.length-1, sorted);
+    private static void insertionSort(int[] unsorted){
+        for (int i = 1; i < unsorted.length; i++) {
+            int x = i;
+            for (int j = x-1; j >= 0 ; j--) {
+                if (unsorted[j] > unsorted[x]){
+                    //swap
+                    int temp = unsorted[j];
+                    unsorted[j] = unsorted[x];
+                    unsorted[x] = temp;
+                    x = j;
+                }
+            }
+        }
+    }
+
+    private static void selectionSort(int[] unsorted){
+        for (int i = 0; i < unsorted.length-1; i++) {
+            for (int j = i+1; j < unsorted.length; j++) {
+                if (unsorted[i] > unsorted[j]){
+                    int temp = unsorted[i];
+                    unsorted[i] = unsorted[j];
+                    unsorted[j] = temp;
+                }
+            }
+        }
+    }
+    private static int[] temp(int[] unsorted) {
+        int[] sorted = new int[unsorted.length];
+        mergesort(unsorted, 0, unsorted.length, sorted);
         return sorted;
     }
 
-    private static void splitSortMerge(int[] unsorted, int start1, int end1, int start2, int end2, int[] sorted) {
-        if (end1-start1 > 1){
-            int temp = start1+ (end1-start1)/2;
-            splitSortMerge(unsorted, start1, temp, temp+1, end1, sorted );
-        }
-        if (end2-start2 > 1){
-            int temp = start2+ (end2-start2)/2;
-            splitSortMerge(unsorted, start2, temp, temp+1, end2, sorted );
-        }
 
-        ///now the splitted arrays should be either size 2 or size 1. i.e. 1 <= end-start <=2
-        if (unsorted[start1] > unsorted[end1]){
-            //swap
-            int temp = unsorted[end1];
-            unsorted[end1] = unsorted[start1];
-            unsorted[start1] = temp;
+    private static int[] mergesort(int[] unsorted, int begin, int end, int[] sorted) {
+        if (end-begin<=1){
+            if (unsorted[end] < unsorted[begin]){
+                swap(unsorted, begin, end);
+            }
+            return sorted;
         }
-        if (unsorted[start2] > unsorted[end2]){
-            //swap
-            int temp = unsorted[start2];
-            unsorted[start2] = unsorted[end2];
-            unsorted[end2] = temp;
+        if (end-begin > 1){
+            int x1 = begin; int x2 = (begin+end)/2;
+            int y1 = 1+ (begin+end)/2; int y2 = end;
+            mergesort(unsorted, begin, (begin+end)/2, sorted);
+            mergesort(unsorted, 1+ (begin+end)/2, end, sorted);
+            merge(unsorted, x1, x2, y1, y2, sorted);
         }
+    return sorted;
+    }
 
-        ///merge
-        boolean firstDone = false;
-        boolean secondDone = false;
-        int sortIdx = start1;
-        while(!firstDone && !secondDone){
-            if (unsorted[start1] > unsorted[start2]){
-                sorted[sortIdx++] = unsorted[start2];
-                start2++;
-            }else {
-                sorted[sortIdx++] = unsorted[start1];
-                start1++;
-            }
-            if (start1 > end1){
-                firstDone = true;
-            }
-            if (start2 > end2){
-                secondDone = true;
+    private static void merge(int[] unsorted, int x1, int x2, int y1, int y2, int[] sorted) {
+        int i = x1, j=x1;
+        while (x1<=x2 && y1<=y2){
+            if (unsorted[x1] > unsorted[y1]){
+                sorted[i++] = unsorted[y1];
+                y1++;
+            } else if (unsorted[x1] < unsorted[y1]) {
+                sorted[i++] = unsorted[x1];
+                x1++;
+            }else {//both are equal
+                sorted[i++] = unsorted[x1];
+                sorted[i++] = unsorted[y1];
+                x1++;y1++;
             }
         }
-        if (firstDone){
-            for (int i = start2; i <= end2; i++) {
-                sorted[sortIdx++] = unsorted[i];
-            }
-            for (int i = start1; i <= end2 ; i++) {
-                unsorted[i] = sorted[i];
-            }
-            return;
+        while (x1<=x2){
+            sorted[i++] = unsorted[x1++];
         }
-        if (secondDone){
-            for (int i = start1; i <= end1; i++) {
-                sorted[sortIdx++] = unsorted[i];
-            }
-            for (int i = start1; i <= end2 ; i++) {
-                unsorted[i] = sorted[i];
-            }
-            return;
+        while (y1<=y2){
+            sorted[i++] = unsorted[y1++];
+        }
+        //copy to original
+        for (; j <= y2; j++) {
+            unsorted[j] = sorted[j];
         }
     }
 
-    private static void quickSort2(int[] un, int i, int j) {
-        if (un == null || (i - j) == 0) return;
-        if (j - i == 1) {
-            if (un[i] > un[j]) swap(un, i, j);
-        }
-        int pivot = (i + j) / 2;
-        int x = i, y = j;
-        while (x <= pivot && y > pivot) {
-            if (un[x] <= un[pivot]) {
-                x++;
-                continue;
-            }
-            if (un[y] > un[pivot]) {
-                y--;
-                continue;
-            }
-            swap(un, x, y);
-            x++;
-            y--;
-        }
-        quickSort2(un, i, pivot);
-        quickSort2(un, pivot + 1, j);
-    }
 
-        private static void quickSort ( int[] unsorted, int low, int high){
-            int pivot = unsorted[low + (high - low) / 2];
-            int i = low, j = high;
-            while (i <= j) {
-
-                while (unsorted[i] < pivot) i++;
-                while (unsorted[j] > pivot) j--;
-                if (i <= j) {
-                    swap(unsorted, i, j);
-                    i++;
-                    j--;
-                }
-            }
-            if (low < j)
-                quickSort(unsorted, low, j);
-            if (i < high)
-                quickSort(unsorted, i, high);
-//        return unsorted;
-        }
-
-        private static void swap ( int[] unsorted, int i, int j){
+    private static void swap ( int[] unsorted, int i, int j){
+        if (i==j) return;
             int x = unsorted[i];
             unsorted[i] = unsorted[j];
             unsorted[j] = x;
         }
-
-
 
 }
 
