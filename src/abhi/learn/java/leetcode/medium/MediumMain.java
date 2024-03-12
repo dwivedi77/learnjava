@@ -19,27 +19,105 @@ public class MediumMain {
         int[] input = new int[]{1,2,3};
 
 
-        int[][] slots1 = {{10,50},{60,120},{140,210}};
-        int[][] slots2 = {{0,15},{60,70}};
+        int[][] slots1 = {{0,1,0},{0,0,1},{1,1,1},{0,0,0}};
+        int[] slots2 = {2,5};
 
-        Object output = jump(new int[]{1});
-        System.out.println("Answer="+output);
+//        Object output = insert(slots1, slots2);
+//        System.out.println("Answer="+output);
 
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
     }
 
+    /// https://leetcode.com/problems/game-of-life/description/
+    public static void gameOfLife(int[][] board) {
+        if (board == null) return;
+        int[][] output = new int[board.length][board[0].length];
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                int liveNbrs = 0;
+                int deadNbrs = 0;
+
+
+                for (int k = i-1; k <= i+1; k++) {
+                    for (int l = j-1; l <= j+1; l++) {
+                        if (k < 0 || k >= board.length || l < 0 || l >= board[0].length || ( k == i && l == j))
+                            continue;
+
+                        // for other
+                        if (board[k][l] == 1) liveNbrs++;
+                        if (board[k][l] == 0) deadNbrs++;
+                    }
+                }
+                // rules
+                if (board[i][j] == 1){ // 3 cases
+                    if (liveNbrs < 2) output[i][j] = 0;
+                    else if (liveNbrs == 2 || liveNbrs == 3) output[i][j] = 1;
+                    else if (liveNbrs > 3) output[i][j] = 0;
+                    else output[i][j] = board[i][j];
+                }else{
+                    if (liveNbrs == 3) output[i][j] = 1;
+                    else output[i][j] = board[i][j];
+                }
+
+            }
+        }
+        System.arraycopy(output, 0, board, 0, output.length);
+        System.out.println();;
+    }
+
+
+    ///https://leetcode.com/problems/insert-interval/description/
+    public static int[][] insert(int[][] intervals, int[] newInterval) {
+        int[][] output = new int[intervals.length][2];
+        int idx = 0; int merging = 0;
+        for (int i = 0; i < intervals.length; i++) {
+
+            int[] interval = intervals[i];
+
+            if (merging == 0 && newInterval[0] <= interval[1]) { //lower merging found
+                output[idx][0] = (newInterval[0] <= interval[0]) ? newInterval[0] : interval[0];
+                merging++;
+            }
+            if (merging == 1){
+                if (newInterval[1] < interval[0]){
+                    output[idx++][1] = newInterval[1]; merging++;
+                } else if (newInterval[1] == interval[0] || newInterval[1] <= interval[1]){
+                    output[idx++][1] = interval[1];
+                    merging++;
+                }
+                continue;
+            }
+
+            if (merging == 0 || merging > 1)output[idx++] = interval;
+        }
+        return output;
+    }
+
+
     /// https://leetcode.com/problems/jump-game-ii/description/
     public static int jump(int[] nums) {
-        int minJump = 0;
-        if(nums == null || nums.length <= 1) return minJump;
+        int count = 0;
+        if(nums == null || nums.length <= 1) return count;
         int jump = 0;
-        for (int i = 0; i < nums.length; i++) {
-             jump += nums[i];
-             minJump = nums[i] == 0? minJump : 1+minJump;
-             if (jump >= nums.length-1) break;
+        for (int i = 0; i < nums.length; ) {
+            int val = nums[i]; int r = i;
+            if (r+val <= nums.length){
+                int nextJump = 0;
+                int temp = 0;
+                for (int j = i+1; j < r+val; j++) {
+                    if (j+nums[j] > temp){
+                        nextJump = j;
+                    }
+                }
+                if (nextJump > 0){
+                    count++;
+                    i = nextJump;
+                }
+            }
         }
-        return minJump;
+        return count;
     }
 
 
@@ -1949,7 +2027,7 @@ public class MediumMain {
     }
 
 
-    /// https://leetcode.com/problems/simplify-path/
+
     private static String simplifyPath(String path) {
         StringTokenizer st = new StringTokenizer(path, "/");
         LinkedList<String> root = new LinkedList<>();

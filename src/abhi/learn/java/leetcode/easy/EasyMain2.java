@@ -21,10 +21,57 @@ public class EasyMain2 {
 //        Object output = isAnagram2("anagram","aganram");
 
 
-        Object output = totalMoney(4);
+        Object output = strStr("mississippi", "issipi");
         System.out.println("output = " + output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
+
+    public static int findDuplicate(int[] nums) {
+        int[] check = new int[nums.length-1];
+        for (int i = 0; i < nums.length; i++) {
+            if (check[nums[i]] == 0) check[nums[i]] = nums[i];
+            else return nums[i];
+        }
+        return -1;
+    }
+
+    /// https://leetcode.com/problems/third-maximum-number/description/
+    public int thirdMax_2(int[] nums) {
+        int[] topThree = new int[3];
+        for (int i = 0; i < nums.length; i++) {
+            if (i < 3) topThree[i] = nums[i];
+            int x = nums[i];
+            if (x < topThree[0]) continue;
+            for (int j = 0; j < topThree.length; j++) {
+                int k = j;
+                while (k >= 0){
+                    int temp = topThree[k];
+                    topThree[k--] = x;
+                    x = temp;
+                }
+            }
+        }
+        return topThree[0];
+    }
+
+    /// https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/
+    public static int strStr(String haystack, String needle) {
+        if (haystack == null || haystack.length() == 0 || needle == null || needle.length() == 0) return -1;
+        if (haystack.length() < needle.length()) return -1;
+        for (int i = 0; i < haystack.length(); i++) {
+            if (haystack.charAt(i) == needle.charAt(0)){
+                boolean matching = true;
+                for (int j = 0; j < needle.length(); j++) {
+                    if ( (i+j) >= haystack.length() || haystack.charAt(i+j) != needle.charAt(j)){
+                        matching = false;
+                        break;
+                    }
+                }
+                if (matching) return i;
+            }
+        }
+        return -1;
     }
 
     /// https://leetcode.com/problems/calculate-money-in-leetcode-bank/
