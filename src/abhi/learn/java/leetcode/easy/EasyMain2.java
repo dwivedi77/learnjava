@@ -21,10 +21,32 @@ public class EasyMain2 {
 //        Object output = isAnagram2("anagram","aganram");
 
 
-        Object output = strStr("mississippi", "issipi");
+        Object output = repeatedSubstringPattern("abcdeabcdeabcde");
         System.out.println("output = " + output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
+
+    /// https://leetcode.com/problems/repeated-substring-pattern/description/
+    public static boolean repeatedSubstringPattern(String s) {
+        if (s == null || s.length() == 0) return false;
+        boolean output = false;
+
+        for (int subLen = 1; subLen <= s.length()/2; subLen++) {
+            String sub = s.substring(0,subLen);
+            int nextSub = subLen;
+            boolean success = true;
+            while(nextSub < s.length()){
+                if (nextSub+subLen > s.length()  || !sub.equals(s.substring(nextSub, nextSub+subLen))){
+                    success = false;
+                    break;
+                }else {
+                    nextSub += subLen;
+                }
+            }
+            if (success) return success;
+        }
+        return output;
     }
 
     public static int findDuplicate(int[] nums) {

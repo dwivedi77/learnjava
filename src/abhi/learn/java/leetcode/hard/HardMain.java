@@ -12,13 +12,104 @@ public class HardMain {
         long startTime = System.currentTimeMillis();
 
         HardMain main = new HardMain();
-        int[] input = new int[]{0,2,1};
-        Object output  = main.countSmaller(input);
+        int[] input = new int[]{1,-1};
+        Object output  = main.shortestPalindrome("abcd");
 
         System.out.println("Answer="+output);
 
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
+
+    /// https://leetcode.com/problems/regular-expression-matching/description/
+    public boolean isMatch(String s, String p) { /// TODO
+
+        int sIdx = 0;
+        int starIdx = -1;
+        for (int i = 0; i < p.length(); i++) {
+            char pChar = p.charAt(i);
+            char sChar = s.charAt(sIdx);
+            if (pChar == '*'){
+                starIdx = i;
+            }else if (pChar == '.'){
+                sIdx++;
+            }else {
+                if (sChar != pChar){
+
+                }
+                sIdx++;
+
+            }
+
+
+        }
+
+        return false;
+    }
+
+    public boolean isMatch2(String s, String p) {
+
+        int pIdx = 0;
+//        int starIdx = -1;
+        boolean isStar = false;
+        for (int i = 0; i < s.length(); i++) {
+            char pChar = p.charAt(pIdx);
+            char sChar = s.charAt(i);
+            if (pChar == '*'){
+                isStar = true;
+            }
+
+        }
+
+        return false;
+    }
+
+    public boolean isMatch(String s, int start, int end, char p) {
+
+        return false;
+    }
+
+
+
+    /// https://leetcode.com/problems/shortest-palindrome/description/
+    public String shortestPalindrome(String s) {  /// TODO
+        if (s == null || s.length() == 0) return "";
+        StringBuilder sb = new StringBuilder("");
+        int i = 0; int j = s.length()-1;
+        while (i < j){
+            if (s.charAt(j) != s.charAt(i)){
+                sb.append(s.charAt(j));
+            }else{
+                i++;
+            }
+            j--;
+        }
+        return sb.append(s).toString();
+    }
+
+
+    /// https://leetcode.com/problems/sliding-window-maximum/description/
+
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        int[] output = new int[nums.length-k+1];
+        PriorityQueue<Integer> queue = new PriorityQueue<>(k, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o2.compareTo(o1);
+            }
+        });
+
+        for (int i = 0; i < k; i++) {
+            queue.offer(nums[i]);
+        }
+        int idx = 0;
+        output[idx++] = queue.peek();
+        for (int i = k; i < nums.length; i++) {
+            queue.remove(nums[i-k]);
+            queue.offer(nums[i]);
+            output[idx++] = queue.peek();
+        }
+        return output;
     }
 
 

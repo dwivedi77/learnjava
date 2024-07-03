@@ -6,10 +6,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
+import java.util.*;
 
 import static abhi.learn.java.core.lang.Outer.*;
 
@@ -24,10 +21,33 @@ public class TestMain {
         System.out.println("START");
         int x = 5;
         double y = -5.234236;
+        justTest(3);
         System.out.println(null + "ab");
         testPriorityQueue();
 
         System.out.println("END");
+    }
+
+    private static void justTest(int n){
+        StringBuilder sb = new StringBuilder("");
+        List<String> result = new LinkedList<>();
+        List<String> temp = new LinkedList<>();
+        justTest_2(3, 0, temp, result);
+        System.out.println(result);
+    }
+
+    private static void justTest_2(int n, int curr, List<String> temp, List<String> result) {
+        if (temp.size() == n){
+            result.add(temp.toString());
+            return;
+        }
+        for (int i = 1; i <= n; i++) {
+            if (i != curr && !temp.contains(""+i)){
+                temp.add(""+i);
+                justTest_2(n, i, temp, result);
+                temp.remove(temp.size()-1);
+            }
+        }
     }
 
     private static void testPriorityQueue(){

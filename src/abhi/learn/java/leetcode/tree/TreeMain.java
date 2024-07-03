@@ -34,17 +34,151 @@ public class TreeMain {
         long startTime = System.currentTimeMillis();
         TreeMain main = new TreeMain();
 
-        String input1 = "3,2,3,null,3,null,1";
+        String input1 = "3,1,45,null,null,12,49";
+        String input2 = "3,1,2";
         TreeNode root = main.createTreeNode(input1);
+        TreeNode subRoot = main.createTreeNode(input2);
 
-//        main.morrisInOrderTraversal(root);
-//        TreeNode node = main.createTreeNode("4");
-        Object output = main.rob(root);
+        Object output = main.getMinimumDifference(root);
         System.out.println("Answer=" + output);
 
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
 
+    /// https://leetcode.com/problems/sum-of-left-leaves/description/
+    public int sumOfLeftLeaves(TreeNode root) {
+        int[] sum = new int[]{0};
+        sumOfLeftLeavesHelper(root, false, sum);
+        return sum[0];
+    }
+
+    public void sumOfLeftLeavesHelper(TreeNode root, boolean isLeft, int[] sum) {
+        if (root == null) return;
+        if (isLeft && root.left == null && root.right == null)
+            sum[0] += root.val;
+
+        sumOfLeftLeavesHelper(root.left, true, sum);
+        sumOfLeftLeavesHelper(root.right, false, sum);
+    }
+
+
+    /// https://leetcode.com/problems/minimum-absolute-difference-in-bst/description/
+    public int getMinimumDifference(TreeNode root) {
+        int[] smallest = new int[]{Integer.MAX_VALUE, Integer.MAX_VALUE};
+        getMinimumDifferenceHelper(root, smallest);
+        return smallest[0];
+    }
+
+    public void getMinimumDifferenceHelper(TreeNode root, int[] smallest) {
+        if (root == null) return;
+        getMinimumDifferenceHelper(root.left, smallest);
+        int val = root.val;
+        smallest[0] = Math.min(smallest[0], Math.abs(val - smallest[1]));
+        smallest[1] = val;
+        getMinimumDifferenceHelper(root.right, smallest);
+
+    }
+
+
+    /// https://leetcode.com/problems/find-mode-in-binary-search-tree/description/
+    public int[] findMode(TreeNode root) {
+        HashMap<Integer, Integer> cntMap = new HashMap<>();
+        findModeHelper(root, cntMap);
+        if (cntMap.size() == 0) return new int[]{0};
+        int max = 0; int maxCnt = 0;
+        for (int key: cntMap.keySet()) {
+            if (cntMap.get(key) > max){
+                max = cntMap.get(key);
+                maxCnt = 1;
+            }else if (cntMap.get(key) == max){
+                maxCnt++;
+            }
+        }
+        int[] result = new int[maxCnt]; int idx = 0;
+        for (int key: cntMap.keySet()) {
+            if (cntMap.get(key) == max)
+                result[idx++] = key;
+        }
+        return result;
+    }
+
+    public void findModeHelper(TreeNode root, HashMap<Integer, Integer> dupes) {
+        if (root == null) return;
+        if (dupes.containsKey(root.val)){
+            dupes.put(root.val, 1+dupes.get(root.val));
+        }else
+            dupes.put(root.val, 1);
+
+        findModeHelper(root.left, dupes);
+        findModeHelper(root.right, dupes);
+    }
+
+
+    /// https://leetcode.com/problems/subtree-of-another-tree/description/
+    public boolean isSubtree(TreeNode root, TreeNode subRoot) { // TODO
+        if (root == null && subRoot == null) return true;
+        if (root == null || subRoot == null) return false;
+        if (isLeaf(root) && isLeaf(subRoot)) {
+            if (root.val == subRoot.val)
+                return true;
+            else return false;
+        }
+        if (root.val != subRoot.val)
+            return isSubtree(root.left, subRoot) || isSubtree(root.right, subRoot);
+
+        return isSubtree(root.left, subRoot.left) && isSubtree(root.right, subRoot.right) && (root.val == subRoot.val);
+    }
+
+//    public boolean isSubTreeHelper(TreeNode root, TreeNode subRoot){
+//
+//    }
+
+
+        public boolean areNodesEqual(TreeNode n1, TreeNode n2){
+        if (n1 == null && n2 == null) return true;
+        else if (n1 == null || n2 == null) return false;
+        else return n1.val == n2.val;
+    }
+
+    /// https://leetcode.com/problems/second-minimum-node-in-a-binary-tree/description/
+        public int findSecondMinimumValue(TreeNode root) {
+            long[] bottomTwo = new long[]{Long.MAX_VALUE,Long.MAX_VALUE};
+            findSecondMinimumValueHelper(root, bottomTwo);
+            if (bottomTwo[0] == bottomTwo[1] || bottomTwo[1] == Long.MAX_VALUE)
+                return -1;
+            else return (int)bottomTwo[1];
+        }
+
+    public void findSecondMinimumValueHelper(TreeNode node, long[] bottomTwo) {
+        if (node == null) return ;
+        //check for value and set
+        if (node.val < bottomTwo[0]){
+            bottomTwo[1] = bottomTwo[0];
+            bottomTwo[0] = node.val;
+        }else if (node.val == bottomTwo[0]){
+            // do nothing
+        }else if (node.val > bottomTwo[0] && node.val <= bottomTwo[1]){
+            bottomTwo[1] = node.val;
+        }
+
+        findSecondMinimumValueHelper(node.left, bottomTwo);
+        findSecondMinimumValueHelper(node.right, bottomTwo);
+    }
+
+    /// https://leetcode.com/problems/binary-tree-paths/
+    public List<String> binaryTreePaths(TreeNode root) {
+        List<String> result = new ArrayList<>();
+        binaryTreePaths(root, "", result);
+        return result;
+    }
+    public void binaryTreePaths(TreeNode node, String sb, List<String> result) {
+        if (isLeaf(node)){
+            result.add(sb.toString()+node.val);
+            return;
+        }
+        if (node.left != null) binaryTreePaths(node.left, sb+node.val+"->", result);
+        if (node.right != null) binaryTreePaths(node.right, sb+node.val+"->", result);
     }
 
     //// https://leetcode.com/problems/serialize-and-deserialize-binary-tree/

@@ -1,6 +1,7 @@
 package abhi.learn.java.leetcode.medium;
 
 
+import abhi.learn.java.leetcode.CommonFunctions;
 import abhi.learn.java.leetcode.datastructure.LRUCache;
 import abhi.learn.java.leetcode.datastructure.MinStack;
 
@@ -22,11 +23,108 @@ public class MediumMain {
         int[][] slots1 = {{0,1,0},{0,0,1},{1,1,1},{0,0,0}};
         int[] slots2 = {2,5};
 
-//        Object output = insert(slots1, slots2);
-//        System.out.println("Answer="+output);
+//        Object output = generateParenthesis(3);
+        Object output = generateParenthesis_2(2);
+        System.out.println("Answer="+output);
 
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
+
+
+    /// https://leetcode.com/problems/generate-parentheses/
+    private static List<String> generateParenthesis(int n) { //// (())(())
+        List<String> temp = new ArrayList<>();
+        List<String> output = new ArrayList<>();
+        generateParenthesisHelper(n, -1, 0, 0, temp, output);
+        return output;
+    }
+
+    private static void generateParenthesisHelper(int n, int curr, int left, int right, List<String> temp, List<String> output ){
+        if (temp.size() == n*2){
+            if (right != left) return;
+            StringBuilder sb = new StringBuilder();
+            for (String str: temp) {
+                sb.append(str);
+            }
+            output.add(sb.toString());
+            return;
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (i == curr) continue;
+            if (left <= right){
+                temp.add("(");left++;
+            }else{
+                temp.add(")");right++;
+            }
+            generateParenthesisHelper(n, i, left, right, temp, output);
+            temp.remove(temp.size()-1);
+        }
+    }
+    private static List<String> generateParenthesis_2(int n) { //// (())(())
+        List<String> temp = new ArrayList<>();
+        String[] master = new String[2*n];
+        for (int i = 0; i < n*2; i++) {
+            if (i < n) master[i] = "(";
+            else master[i] = ")";
+        }
+        Set<String> result = new HashSet<>();
+        List<String> output = new ArrayList<>();
+        generateParenthesisHelper_2(n, -1, 0, 0, temp, output, master);
+
+        return output;
+    }
+
+    private static void generateParenthesisHelper_2(int n, int curr, int left, int right, List<String> temp, List<String> output, String[] master) {
+        if (temp.size() == 2*n){
+            if (left != right) return;
+            StringBuilder sb = new StringBuilder();
+            for (String str: temp) {
+                sb.append(str);
+            }
+            output.add(sb.toString());
+            return;
+        }
+        for (int i = 0; i < master.length; i++) {
+            if (i == curr) continue;
+            String next = master[i];
+            if ("(".equals(next) && left < n){
+                left++;
+                temp.add(next);
+                generateParenthesisHelper_2(n, i, left, right, temp, output, master);
+                temp.remove(temp.size()-1);left--;
+            }
+            if(")".equals(next) && right < n && (left > right)){
+                right++;
+                temp.add(next);
+                generateParenthesisHelper_2(n, i, left, right, temp, output, master);
+                temp.remove(temp.size()-1);right--;
+            }
+        }
+    }
+
+    /// https://leetcode.com/problems/permutations/
+    public static List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> temp = new ArrayList<>();
+        permuteHelper(nums, -1, temp, result);
+        return result;
+    }
+
+    public static void permuteHelper(int[] nums, int curr, List<Integer> temp, List<List<Integer>> result) {
+        if (temp.size() == nums.length){
+            List<Integer> copy = new ArrayList<>(temp);
+            result.add(copy);
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (i != curr && !temp.contains(nums[i])){
+                temp.add(nums[i]);
+                permuteHelper(nums, i, temp, result);
+                temp.remove(temp.size()-1);
+            }
+        }
     }
 
     /// https://leetcode.com/problems/game-of-life/description/
@@ -367,39 +465,6 @@ public class MediumMain {
     /// https://leetcode.com/problems/delete-and-earn/
     public int deleteAndEarn(int[] nums) {
         return -1;
-    }
-
-    /// https://leetcode.com/problems/generate-parentheses/
-    private static List<String> generateParenthesis(int n) { //// (())(())
-        List<String> output = new ArrayList<>();
-        if (n <= 0) return output;
-        StringBuilder sb = new StringBuilder();
-        generateParenthesisHelper(n, 1, 0, sb, output);
-        return output;
-    }
-
-    private static void generateParenthesisHelper(int n, int idx, int count, StringBuilder sb, List<String> output) {
-        if (count == 0 && sb.length() == 2 * n) {
-            output.add(sb.toString());
-            return;
-        } else if (sb.length() > 2 * n) {
-            return;
-        }
-        for (int i = idx; i <= n; i++) {
-            sb.append("(");
-            count++;
-            generateParenthesisHelper(n, i + 1, count, sb, output);
-            for (int j = 0; j < i; j++) {
-                sb.append(")");
-                count--;
-                generateParenthesisHelper(n, i + 1, count, sb, output);
-                sb.deleteCharAt(sb.length() - 1);
-                count++;
-            }
-            sb.deleteCharAt(sb.length() - 1);
-            count--;
-        }
-
     }
 
     /// https://leetcode.com/problems/reorder-list/
@@ -1799,7 +1864,23 @@ public class MediumMain {
     }
 
     /// 30 day challenge day 3
-    private static int maxSubArray(int[] nums) {
+    /// https://leetcode.com/problems/maximum-subarray/description/
+    private int maxSubArray(int[] nums) {
+        int maxSum = nums[0];
+        int sum = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            if (sum < 0){
+                sum = nums[i];
+            }else {
+                sum += nums[i];
+            }
+            if (sum > maxSum)
+                maxSum = sum;
+        }
+        return maxSum;
+    }
+
+    private static int maxSubArray2(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
         int sum = 0;
         int max = nums[0];
@@ -2026,6 +2107,29 @@ public class MediumMain {
         }
     }
 
+
+    /// https://leetcode.com/problems/simplify-path/
+    private static String simplifyPath_2(String path) { // TODO
+        List<String> tokens = new LinkedList<>();
+        StringBuilder token = new StringBuilder("");
+        for (int i = 0; i < path.length(); i++) {
+            char x = path.charAt(i);
+            if (x == '/') {
+                String str = token.toString();
+                if ("..".equals(str) && tokens.size() > 0) tokens.remove(tokens.size()-1);
+                if (str.length() != 0 && "..".equals(str))tokens.add(str);
+                token = new StringBuilder();
+            }else
+                token.append(x);
+        }
+
+        StringBuilder url = new StringBuilder("");
+        for (String str: tokens) {
+                url.append('/');
+                url.append(str);
+        }
+        return url.length() > 0 ? url.toString() : "/";
+    }
 
 
     private static String simplifyPath(String path) {
@@ -2746,8 +2850,7 @@ public class MediumMain {
     }
 
 
-    /// https://leetcode.com/problems/letter-combinations-of-a-phone-number/
-    private static List<String> letterCombinations(String digits) {
+        private static List<String> letterCombinations(String digits) {
         LinkedList<String> ans = new LinkedList<String>();
         if (digits.isEmpty()) return ans;
         String[] mapping = new String[]{"0", "1", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
@@ -2918,7 +3021,7 @@ public class MediumMain {
         for (int i = 0; i < s.length(); i++) {
             for (int j = s.length() - 1; j > i; j--) {
                 String sub = s.substring(i, j + 1);
-                if (isPalindrome(sub)) {
+                if (CommonFunctions.isPalindrome(sub)) {
                     if (longest.length() < sub.length())
                         longest = sub;
                 }
@@ -2933,25 +3036,12 @@ public class MediumMain {
         for (int i = 0; i < s.length(); i++) {
             for (int j = i + longest.length(); j < s.length(); j++) {
                 String sub = s.substring(i, j + 1);
-                if (isPalindrome(sub)) {
+                if (CommonFunctions.isPalindrome(sub)) {
                     longest = sub;
                 }
             }
         }
         return longest;
-    }
-
-    private static boolean isPalindrome(String sub) {
-        int i = 0, j = sub.length() - 1;
-        while (i <= j) {
-            if (sub.charAt(i) == sub.charAt(j)) {
-                i++;
-                j--;
-            } else {
-                return false;
-            }
-        }
-        return true;
     }
 
 
@@ -3052,7 +3142,6 @@ public class MediumMain {
             if (i * i <= num) {
                 if (num % i == 0) return false;
             } else break;
-
         }
         return true;
     }
