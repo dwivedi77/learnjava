@@ -24,13 +24,18 @@ public class MediumMain {
         int[] slots2 = {2,5};
 
 //        Object output = generateParenthesis(3);
-        Object output = generateParenthesis_2(2);
+        Object output = convertToZigZag("PAYPALISHIRING", 3);
         System.out.println("Answer="+output);
 
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
     }
 
+    /// https://leetcode.com/problems/zigzag-conversion/
+    private static String convertToZigZag(String s, int numRows) { // TODO
+        if (s == null || s.length() == 0) return s;
+        return "";
+    }
 
     /// https://leetcode.com/problems/generate-parentheses/
     private static List<String> generateParenthesis(int n) { //// (())(())
@@ -2976,42 +2981,6 @@ public class MediumMain {
         return output * multiplier;
     }
 
-
-    /// https://leetcode.com/problems/zigzag-conversion/
-    private static String convertToZigZag(String s, int numRows) { // TODO
-        StringBuilder sb = new StringBuilder();
-        char[][] matrix = new char[numRows][s.length()];
-        int idx = 0;
-        boolean done = false; // to stop when all characters are written in matrix
-
-        boolean zigzag = false;
-        int zigzagIdx = numRows - 2;
-        for (int j = 0; j < s.length(); j++) {
-            for (int i = 0; i < matrix.length; i++) {
-
-                if (zigzag) {
-                    matrix[zigzagIdx--][j] = s.charAt(idx++);
-                    if (idx == s.length()) done = true;
-                    break;
-                } else {
-                    matrix[i][j] = s.charAt(idx++);
-                }
-                if (idx == s.length()) {
-                    done = true;
-                    break;
-                }
-            }
-            if (done) break;
-            if (zigzagIdx <= 0 || zigzagIdx >= numRows - 2) {
-                zigzag = !zigzag;
-                zigzagIdx = numRows - 2;
-            }
-
-        }
-
-
-        return sb.toString();
-    }
 
 
     /// https://leetcode.com/problems/longest-palindromic-substring/

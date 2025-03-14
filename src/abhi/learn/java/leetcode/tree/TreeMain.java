@@ -34,17 +34,62 @@ public class TreeMain {
         long startTime = System.currentTimeMillis();
         TreeMain main = new TreeMain();
 
-        String input1 = "3,1,45,null,null,12,49";
+        String input1 = "1,null,3,2,4,null,null,null,5";
         String input2 = "3,1,2";
         TreeNode root = main.createTreeNode(input1);
         TreeNode subRoot = main.createTreeNode(input2);
 
-        Object output = main.getMinimumDifference(root);
+        Object output = main.longestConsecutive(root);
         System.out.println("Answer=" + output);
 
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
     }
+
+    /// https://leetcode.com/problems/binary-tree-longest-consecutive-sequence/description/
+    public int longestConsecutive(TreeNode root) {
+        int[] currSeq = new int[]{1};
+        int[] maxSeq = new int[]{1};
+        longestConsecutiveHelper(root, root.val, currSeq, maxSeq);
+        return maxSeq[0];
+    }
+
+    public void longestConsecutiveHelper(TreeNode node, int prev, int[] currSeq, int[] maxSeq) {
+        if (node == null) return;
+        if (node.val == prev + 1) {
+            currSeq[0]++;
+            if (currSeq[0] > maxSeq[0])
+                maxSeq[0] = currSeq[0];
+        }
+
+        longestConsecutiveHelper(node.left, node.val, currSeq, maxSeq);
+        longestConsecutiveHelper(node.right, node.val, currSeq, maxSeq);
+        if (node.val == prev + 1)
+            currSeq[0]--;
+    }
+
+
+    /// https://leetcode.com/problems/recover-binary-search-tree/description/
+    public void recoverTree(TreeNode root) { /// TODO
+        List<TreeNode> list = new ArrayList<>();
+        recoverTreeHelper(root, list, root, root);
+        if (list.size() != 2) return;
+        int temp = list.get(0).val;
+        list.get(0).val = list.get(1).val;
+        list.get(1).val = temp;
+    }
+
+    public boolean recoverTreeHelper(TreeNode node, List<TreeNode> list, TreeNode max, TreeNode min) {
+        if (node == null || isLeaf(node)) return true;
+        if (max != null && max.val <= node.val) return false;
+        if (min != null && min.val >= node.val) return false;
+
+        boolean isValidNode = recoverTreeHelper(node.left, list,null, min) && recoverTreeHelper(node.right, list, null, min);
+        if (!isValidNode) list.add(node);
+        return isValidNode;
+    }
+
+
 
     /// https://leetcode.com/problems/sum-of-left-leaves/description/
     public int sumOfLeftLeaves(TreeNode root) {
@@ -647,7 +692,7 @@ public class TreeMain {
 
 
     /// https://leetcode.com/problems/validate-binary-search-tree/
-    public boolean isValidBST(TreeNode root) {
+    public boolean isValidBST(TreeNode root) { /// TODO
         if (root == null || isLeaf(root)) return true;
 
         if (root.left != null && root.left.val >= root.val) return false;

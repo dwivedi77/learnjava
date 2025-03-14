@@ -21,10 +21,20 @@ public class EasyMain2 {
 //        Object output = isAnagram2("anagram","aganram");
 
 
-        Object output = repeatedSubstringPattern("abcdeabcdeabcde");
+        Object output = numWaterBottles(9, 3);
         System.out.println("output = " + output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
+
+    /// https://leetcode.com/problems/water-bottles/description/
+    public static int numWaterBottles(int numBottles, int numExchange) {
+        int count = numBottles;
+        while (numBottles/numExchange > 0){
+            count += numBottles/numExchange;
+            numBottles = numBottles/numExchange + numBottles%numExchange;
+        }
+        return count+numBottles;
     }
 
     /// https://leetcode.com/problems/repeated-substring-pattern/description/
