@@ -1,5 +1,7 @@
 package abhi.learn.java.leetcode.hard;
 
+import abhi.learn.java.leetcode.datastructure.ListNode;
+
 import java.util.*;
 
 /**
@@ -20,6 +22,58 @@ public class HardMain {
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
     }
+    /// https://leetcode.com/problems/the-skyline-problem/
+    public List<List<Integer>> getSkyline(int[][] buildings) {
+        List<List<Integer>> output  =new ArrayList<>();
+        List<Integer> current = null;
+        for (int i = 0; i < buildings.length; i++) {
+            int[] bldg = buildings[i];
+            if (current == null){
+                current = new ArrayList<>();
+                current.add(bldg[0]); //x axis
+                current.add(bldg[2]); // height
+                continue;
+            }else
+                current = output.get(output.size()-1);
+                List<Integer> next = new ArrayList<>();
+                if (bldg[1] <= buildings[i-1][1]){ //means overlap
+                    if (bldg[2] <= buildings[i-1][2]) //2nd bldg is heigher than first
+                        {next.add(bldg[0]);next.add(bldg[2]);}
+                }else{
+
+                }
+
+
+        }
+        return output;
+    }
+
+
+    /// https://leetcode.com/problems/merge-k-sorted-lists/description/
+    public ListNode mergeKLists(ListNode[] lists) {
+        if(lists == null || lists.length == 0) return null;
+        PriorityQueue<Integer> queue = new PriorityQueue<>();
+        for (ListNode node : lists) {
+            while (node != null) {
+                queue.add(node.val);
+                node = node.next;
+            }
+        }
+        int size = queue.size();
+        ListNode output = null;
+        ListNode curr = null;
+        ListNode prev = null;
+        for (int i = 0; i < size; i++) {
+            curr = new ListNode();
+            curr.val = queue.poll();
+            if (i == 0) {output = curr; prev = curr; continue;}
+            prev.next = curr;
+            prev = prev.next;
+
+        }
+        return output;
+    }
+
 
     /// https://leetcode.com/problems/regular-expression-matching/description/
     public boolean isMatch(String s, String p) { /// TODO

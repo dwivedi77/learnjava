@@ -1,6 +1,7 @@
 package abhi.learn.java.leetcode.tree;
 
 import abhi.learn.java.datastructure.tree.Node;
+import abhi.learn.java.leetcode.datastructure.ListNode;
 
 import java.util.*;
 
@@ -8,17 +9,6 @@ import java.util.*;
  * Created by Abhishek on 1/12/2022.
  */
 public class TreeMain {
-
-    /**
-     * Definition for singly-linked list.
-     * */
-     public class ListNode {
-         int val;
-         ListNode next;
-         ListNode() {}
-         ListNode(int val) { this.val = val; }
-         ListNode(int val, ListNode next) { this.val = val; this.next = next; }
-     }
 
 
     public boolean isLeaf(TreeNode node){
@@ -266,6 +256,21 @@ public class TreeMain {
     }
 
     /// https://leetcode.com/problems/binary-tree-right-side-view/
+    public List<Integer> rightSideView_2(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+
+        rightSideView_2_helper(root, result, 0);
+        return result;
+    }
+    public void rightSideView_2_helper(TreeNode root, List<Integer> result, int depth) {
+        if (root == null)
+            return;
+        if (result.size() == depth)
+            result.add(root.val);
+        rightSideView_2_helper(root.right, result, depth+1);
+        rightSideView_2_helper(root.left, result, depth+1);
+    }
+
     public List<Integer> rightSideView(TreeNode root) {
         List<Integer> result = new ArrayList<>();
         if (root == null) return result;
@@ -930,39 +935,15 @@ public class TreeMain {
 
     /// https://leetcode.com/problems/symmetric-tree/
     public boolean isSymmetric(TreeNode root) {
-        if (root == null) return false;
         if (isLeaf(root)) return true;
-        TreeNode left = root.left;
-        List<TreeNode> leftQ = new ArrayList<>();
-        leftQ.add(left);
-        int idx = 0;
-        while (idx < leftQ.size()){
-            TreeNode curr = leftQ.get(idx++);
-            if (curr == null || isLeaf(curr)) continue;
-            leftQ.add(curr.left);
-            leftQ.add(curr.right);
+        LinkedList<Integer> queue = new LinkedList<>();
+        queue.add(root.val);
+        while (!queue.isEmpty()){
+            int v1 = queue.getFirst();
+            int v2 = queue.getLast();
+            // TODO
         }
 
-        idx = 0;
-        TreeNode right = root.right;
-        List<TreeNode> rightQ = new ArrayList<>();
-        rightQ.add(right);
-        while (idx < rightQ.size()){
-            TreeNode curr = rightQ.get(idx++);
-            if (curr == null || isLeaf(curr)) continue;
-            rightQ.add(curr.right);
-            rightQ.add(curr.left);
-        }
-
-        if (leftQ.size() != rightQ.size()) return false;
-        for (int i = 0; i < leftQ.size(); i++) {
-            TreeNode l1 = leftQ.get(i);
-            TreeNode r1 = rightQ.get(i);
-            if ( (l1 != null && r1 != null) && (l1.val == r1.val))
-                continue;
-            else if(l1 == null && r1 == null) continue;
-            else return false;
-        }
         return true;
     }
 

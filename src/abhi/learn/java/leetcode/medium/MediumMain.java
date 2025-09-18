@@ -17,21 +17,43 @@ public class MediumMain {
     public static void main(String[] args) {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
-        int[] input = new int[]{1,2,3};
 
-
-        int[][] slots1 = {{0,1,0},{0,0,1},{1,1,1},{0,0,0}};
-        int[] slots2 = {2,5};
-
-//        Object output = generateParenthesis(3);
-        Object output = convertToZigZag("PAYPALISHIRING", 3);
+        Object output = letterCombinations("563");
+//        Object output = rankTeams(new String[]{"ABC","ACB","ABC","ACB","ACB"});
         System.out.println("Answer="+output);
 
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
     }
 
+
+    /// https://leetcode.com/problems/rank-teams-by-votes/description/
     /// https://leetcode.com/problems/zigzag-conversion/
+
+    public static String rankTeams(String[] votes) {
+        if (votes == null) return null;
+        if (votes.length == 1) return votes[0];
+
+        int noOfTeams = votes[0].length();
+        int noOfVotes = votes.length;
+        List<Map<String, Integer>> convertedMapList = new ArrayList<>();
+
+        for (int i = 0; i < votes.length; i++) {
+            String vote = votes[i];
+            convertedMapList.add(new HashMap<>());
+            for (int j = 0; j < vote.length(); j++) {
+                String team = vote.charAt(j)+"";
+                if (convertedMapList.get(i).containsKey(team))
+                    convertedMapList.get(i).put(team, convertedMapList.get(i).get(team)+1);
+                else
+                    convertedMapList.get(i).put(team, 1);
+            }
+        }
+
+
+        return "";
+    }
+
     private static String convertToZigZag(String s, int numRows) { // TODO
         if (s == null || s.length() == 0) return s;
         return "";
@@ -1809,25 +1831,20 @@ public class MediumMain {
 
 
     /// 30 day challenge day 5
+    /// https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
     private static int maxProfit(int[] prices) {
+
         if (prices == null || prices.length == 0) return 0;
-        boolean bought = false;
-        int buyIdx = -1;
-        int profit = 0;
-        for (int i = 0; i < prices.length; i++) {
-            if ((i + 1) < prices.length && prices[i] < prices[i + 1] && !bought) {
-                bought = true;
-                buyIdx = i;
+        int maxProfit = 0;
+        int buyPrice = prices[0];
+        for (int i = 1; i < prices.length; i++) {
+            if (buyPrice > prices[i]){
+                buyPrice = prices[i];
+                continue;
             }
-            if ((i + 1) < prices.length && prices[i] > prices[i + 1] && bought) {
-                bought = false;
-                profit += (prices[i] - prices[buyIdx]);
-            }
+            maxProfit = Math.max(maxProfit, prices[i]-buyPrice);
         }
-        if (bought) {
-            profit += (prices[prices.length - 1] - prices[buyIdx]);
-        }
-        return profit;
+        return maxProfit;
     }
 
     /// count the bits to change

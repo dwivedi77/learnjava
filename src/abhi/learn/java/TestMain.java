@@ -29,11 +29,22 @@ public class TestMain {
     }
 
     private static void justTest(int n){
-        StringBuilder sb = new StringBuilder("");
-        List<String> result = new LinkedList<>();
-        List<String> temp = new LinkedList<>();
-        justTest_2(3, 0, temp, result);
-        System.out.println(result);
+        Map<String, Map<String, String>> table = new HashMap<>();
+        for (int i = 0; i < 3; i++) {
+            Map<String, String> row = new HashMap<>();
+            for (int j = 0; j < 3; j++) {
+                row.put("key-"+j, "val-"+j);
+            }
+            table.put("row-key-"+i, row);
+        }
+        table.forEach((s, row) -> {
+                row.forEach( (k,v) ->
+                    {System.out.print("Row:"+s + "col"+k +" val"+v);}
+                );
+                System.out.println();}
+                );
+
+        System.out.println();
     }
 
     private static void justTest_2(int n, int curr, List<String> temp, List<String> result) {

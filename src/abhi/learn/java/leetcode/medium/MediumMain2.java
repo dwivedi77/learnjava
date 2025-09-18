@@ -9,15 +9,43 @@ public class MediumMain2 {
         long startTime = System.currentTimeMillis();
 
         MediumMain2 main = new MediumMain2();
-
-        InfiniteStream stream = new InfiniteStream(new int[]{1,1,1,0,1,0,0,0});
-        Object output = main.findPatternTest(stream, new int[]{0,1});
-
+        Object output = main.topKFrequent(new int[]{1,2,1,2,1,2,3,1,3,2}, 3);
+//
         System.out.println("Answer="+output);
 
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
     }
+    /// https://leetcode.com/problems/merge-k-sorted-lists/description/
+
+
+
+    /// https://leetcode.com/problems/top-k-frequent-elements/description/
+    public int[] topKFrequent(int[] nums, int k) {
+        Map<Integer, Integer> countMap = new HashMap<>();
+
+        for (int i = 0; i < nums.length; i++) {
+            countMap.put(nums[i], 1 + countMap.getOrDefault(nums[i], 0));
+        }
+        PriorityQueue<int[]> queue = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return ((Integer)o2[1]).compareTo(o1[1]);
+            }
+        });
+
+        for (Integer key: countMap.keySet()) {
+            queue.add(new int[]{key, countMap.get(key)});
+        }
+
+        int[] out = new int[k];
+        for (int i = 0; i < k; i++) {
+            out[i] = queue.poll()[0];
+
+        }
+        return out;
+    }
+
 
     /// https://leetcode.com/problems/find-pattern-in-infinite-stream-i/description/
     public int findPatternTest(InfiniteStream data, int[] pattern) {

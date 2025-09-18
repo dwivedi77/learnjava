@@ -14,17 +14,213 @@ public class EasyMain2 {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
 
-//        char[][] dictionary = new char[][]{{'A','B','C','A', 'R'},{'S','F','C','M','U'},{'A','D','E','Y','E'},{'A','X','E','Z','E'}};
-//        int[][] matrix = new int[][]{{1,4,7,11,15},{2,5,8,12,19},{3,6,9,16,22},{10,13,14,17,24},{18,21,23,26,30}};
-//        int[][] matrix = new int[][]{{1,3,5,7,9},{2,4,6,8,10},{11,13,15,17,19},{12,14,16,18,20},{21,22,23,24,25}};
-//        int[][] matrix = new int[][]{{-1,3}};
-//        Object output = isAnagram2("anagram","aganram");
-
-
-        Object output = numWaterBottles(9, 3);
+        Object output = findKthLargest(new int[]{3,2,3,1,2,4,5,5,6}, 4);
         System.out.println("output = " + output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
+
+    /// https://leetcode.com/problems/relative-ranks/
+    public String[] findRelativeRanks(int[] score) {
+        String[] output = new String[score.length];
+
+        Integer[] ranking = new Integer[score.length];
+
+        for (int i = 0; i < score.length; i++) {
+            ranking[i] = i;
+        }
+
+        Arrays.sort(ranking, (a,b) -> Integer.compare(score[b], score[a]));
+
+        for (int i = 0; i < score.length; i++) {
+            if (ranking[i] == 0){
+                output[ranking[i]] = "Gold Medal";
+            } else if (ranking[i] == 1) {
+                output[ranking[i]] = "Silver Medal";
+            } else if (ranking[i] == 2) {
+                output[ranking[i]] = "Bronze Medal";
+            } else
+                output[ranking[i]] = ""+score[ranking[i]];
+        }
+
+        return output;
+    }
+
+
+
+    //// https://leetcode.com/problems/kth-largest-element-in-an-array/
+    private static int findKthLargest(int[] nums, int k) {
+        PriorityQueue<Integer> heap = new PriorityQueue<>();
+
+        for (int i = 0; i < nums.length; i++) {
+            heap.add(nums[i]);
+            if (heap.size() > k)
+                heap.poll();
+        }
+        return heap.peek();
+    }
+
+    private static List<String> allPosibleBinaryString(String input){
+        List<String> output = new ArrayList<>();
+        Queue<String> primary = new LinkedList<>();
+        primary.add(input);
+
+        while (!primary.isEmpty()){
+            boolean flap = false;
+            String x = primary.poll();
+            for (int i = 0; i < x.length(); i++) {
+                if ('?' == x.charAt(i)){
+                    String x1 = x.replaceFirst("\\?", "0");
+                    String x2 = x.replaceFirst("\\?", "1");
+                    primary.add(x1);primary.add(x2);
+                    flap = true;
+                    break;
+                }
+            }
+            if(!flap) output.add(x);
+        }
+        return output;
+    }
+
+    /// https://leetcode.com/problems/shortest-word-distance/description/
+    public static int shortestDistance(String[] wordsDict, String word1, String word2) {
+        Map<String, Integer> map = new HashMap<>();
+        int shortest = Integer.MAX_VALUE;
+        for (int i = 0; i < wordsDict.length; i++) {
+            String word = wordsDict[i];
+            if (word.equals(word1) || word.equals(word2))
+                map.put(word, i);
+
+            if (map.containsKey(word1) && map.containsKey(word2)){
+                shortest = Math.min(shortest, Math.abs(map.get(word1) - map.get(word2)));
+            }
+        }
+        return shortest;
+    }
+
+    /// https://leetcode.com/problems/contains-duplicate-ii/
+    public static boolean containsNearbyDuplicate(int[] nums, int k) {
+        Map<Integer, Integer> map = new HashMap<>();
+
+        for (int i = 0; i < nums.length; i++) {
+            if(map.containsKey(nums[i]) && i - map.get(nums[i]) <= k){
+                return true;
+            }else {
+                map.put(nums[i], i);
+            }
+        }
+        return false;
+    }
+
+
+
+    /// https://leetcode.com/problems/pascals-triangle/
+    private static List<List<Integer>> generate(int numRows) {
+        List<List<Integer>> answer = new ArrayList<>();
+        List<Integer> prevRow = null;
+        for (int i = 0; i < numRows; i++) {
+            List<Integer> row = new ArrayList<>();
+            for (int j = 0; j <= i; j++) {
+                if (j == 0 || j == i || prevRow == null) {
+                    row.add(1);
+                    continue;
+                }
+
+                if (j-1>=0 && j <= i)
+                    row.add(prevRow.get(j-1)+prevRow.get(j));
+            }
+            answer.add(row);
+            prevRow = row;
+        }
+        return answer;
+    }
+
+    /// https://leetcode.com/problems/pascals-triangle-ii/description/
+    public List<Integer> getRow(int rowIndex) {
+        List<Integer> prevRow = null;
+        List<Integer> lastRow = null;
+        for (int i = 0; i <= rowIndex; i++) {
+            lastRow = new ArrayList<>();
+            for (int j = 0; j <= i; j++) {
+                if (j == 0 || j == i || prevRow == null) {
+                    lastRow.add(1);
+                    continue;
+                }
+
+                if (j-1>=0 && j <= i)
+                    lastRow.add(prevRow.get(j-1)+prevRow.get(j));
+            }
+            prevRow = lastRow;
+        }
+        return lastRow;
+    }
+
+
+    /// https://leetcode.com/problems/merge-sorted-array/
+    private static void merge(int[] nums1, int m, int[] nums2, int n) {
+        int[] answer = new int[m+n];
+        int idx = 0;
+        int i = 0, j=0;
+        for (; i< m && j < n;) {
+            if (nums1[i] <= nums2[j])
+                answer[idx++] = nums1[i++];
+            else
+                answer[idx++] = nums2[j++];
+        }
+        if (i >= m){
+            for (int k = j; k < n; k++) {
+                answer[idx++] = nums2[k];
+            }
+        }else {
+            for (int k = i; k < m; k++) {
+                answer[idx++] = nums1[k];
+            }
+        }
+        System.arraycopy(answer, 0, nums1, 0, answer.length);
+    }
+
+
+    /// https://leetcode.com/problems/unique-length-3-palindromic-subsequences/
+    public static int countPalindromicSubsequence(String s) {
+        if (s == null || s.length()<3) return 0;
+        int count = 0;
+        HashSet<String> keys = new HashSet<>();
+        boolean[] seen = new boolean[26];
+        for (int i = 0; i < s.length(); i++) {
+            if (seen[s.charAt(i)%26])
+                continue;
+            else seen[s.charAt(i)%26] = true;
+            int j = s.length()-1;
+            while (i != j && s.charAt(i) != s.charAt(j)) {
+                j--;
+            }
+
+            for (int k = i+1; k < j ; k++) {
+                String key = ""+s.charAt(i)+s.charAt(k)+s.charAt(j);
+                if (keys.add(key))
+                    count++;
+            }
+        }
+        return count;
+    }
+
+
+    ///https://leetcode.com/problems/merge-strings-alternately/
+    public String mergeAlternately(String word1, String word2) {
+        if(word1 == null || word1.length() == 0)
+            return word2;
+        if(word2 == null || word2.length() == 0)
+            return word1;
+        char[] result = new char[word1.length()+word2.length()];
+
+        for (int i=0,j=0; i<word1.length() || j < word2.length();){
+            if (i < word1.length())
+                result[i+j] = word1.charAt(i++);
+            if (j < word2.length())
+                result[i+j] = word2.charAt(j++);
+        }
+        return new String(result);
+
     }
 
     /// https://leetcode.com/problems/water-bottles/description/
@@ -553,6 +749,39 @@ public class EasyMain2 {
     }
 
     /// https://leetcode.com/problems/3sum/
+    public static List<List<Integer>> threeSum_2(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (nums == null || nums.length < 3)
+            return result;
+
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length; ) {
+            int j = i+1; int k = nums.length-1;
+            while (j < k){
+                int sum = nums[i] + nums[j] + nums[k];
+                if (sum == 0){
+                    result.add( Arrays.asList(nums[i], nums[j], nums[k]) );
+                    j++;k--;
+                    while (j < nums.length && nums[j-1] == nums[j])
+                        j++;
+                    while (k >= 0 && nums[k] == nums[k+1])
+                        k--;
+                }
+                else if (sum < 0) {
+                    j++;
+                }else {
+                    k--;
+                }
+
+            }
+            i++;
+            while(i < nums.length && nums[i] == nums[i-1])
+                i++;
+        }
+        return result;
+    }
+
+
     private static List<List<Integer>> threeSum(int[] nums) {
         List<List<Integer>> output = new ArrayList<>();
         if (nums == null || nums.length == 0) return output;
