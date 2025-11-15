@@ -9,17 +9,110 @@ public class MatrixMain {
         long startTime = System.currentTimeMillis();
 
         MatrixMain main = new MatrixMain();
-        int[][] img = new int[][]{{395,777,912,431,42,266,989,524,498,415,941,803,850,311,992,489,367,598,914,930,224,517,143,289,144,774,98,634},{819,257,932,546,723,830,617,924,151,318,102,748,76,921,871,701,339,484,574,104,363,445,324,626,656,935,210,990},{566,489,454,887,534,267,64,825,941,562,938,15,96,737,861,409,728,845,804,685,641,2,627,506,848,889,342,250},{748,334,721,892,65,196,940,582,228,245,823,991,146,823,557,459,94,83,328,897,521,956,502,112,309,565,299,724},{128,561,341,835,945,554,209,987,819,618,561,602,295,456,94,611,818,395,325,590,248,298,189,194,842,192,34,628},{673,267,488,71,92,696,776,134,898,154,946,40,863,83,920,717,946,850,554,700,401,858,723,538,283,535,832,242},{870,221,917,696,604,846,973,430,594,282,462,505,677,657,718,939,813,366,85,333,628,119,499,602,646,344,866,195},{249,17,750,278,120,723,226,381,814,175,341,437,836,64,104,802,150,876,715,225,47,837,588,650,932,959,548,617},{697,76,28,128,651,194,621,851,590,123,401,94,380,854,119,38,621,23,200,985,994,190,736,127,491,216,745,820},{63,960,696,24,558,436,636,104,856,267,72,227,74,663,309,359,447,185,63,516,479,41,611,104,717,401,205,267},{368,927,750,482,859,924,941,584,174,715,689,209,990,786,60,808,693,163,866,166,351,543,257,121,612,944,453,682},{180,14,483,698,420,922,583,896,521,940,319,665,366,398,858,674,257,158,575,708,13,469,760,81,344,757,47,558},{288,139,246,781,977,494,361,625,295,690,368,605,970,914,649,875,636,136,733,318,398,767,425,849,667,83,2,609},{197,716,343,164,246,229,653,459,388,728,897,690,582,896,425,33,412,893,719,582,429,791,679,727,48,170,457,66},{266,719,162,458,541,907,499,930,575,619,774,1,906,40,507,334,320,858,479,52,829,843,897,998,832,426,193,562},{987,649,86,858,743,134,16,412,973,695,428,324,4,219,15,735,773,3,843,692,542,627,101,196,122,623,665,204},{895,310,287,706,187,103,488,875,945,407,643,84,23,282,936,464,820,812,119,883,263,137,670,534,837,667,661,356},{118,893,159,286,872,20,44,42,211,698,266,572,323,970,376,961,582,932,870,44,867,768,985,719,623,672,507,730},{660,925,470,656,446,382,893,551,183,213,385,602,299,10,142,155,278,342,346,809,377,736,96,347,799,636,37,43},{277,168,154,598,297,370,405,562,133,301,118,490,749,246,957,50,316,184,878,536,747,73,310,413,856,337,307,425},{112,102,575,931,493,486,346,862,818,1000,832,352,128,491,119,717,510,437,39,310,344,753,704,916,160,942,171,642},{579,385,826,998,655,90,68,828,87,203,768,227,63,395,9,101,404,570,532,297,460,943,501,808,599,732,696,223},{434,86,378,226,268,600,796,171,442,197,368,118,66,842,885,874,719,29,925,539,463,771,694,207,122,510,408,263},{213,657,44,971,817,222,639,150,108,203,470,388,371,560,847,155,108,611,500,152,578,416,654,697,434,899,534,508},{696,940,910,331,854,511,511,651,687,896,207,556,625,954,225,10,349,723,986,765,921,326,838,330,37,538,152,896},{264,618,803,160,863,389,597,302,736,724,827,482,68,820,87,529,890,938,41,68,231,134,42,308,16,778,865,460},{339,883,165,820,153,890,672,472,992,381,518,392,923,543,515,35,588,93,695,814,825,531,777,615,79,765,437,928},{773,212,297,549,923,613,428,846,996,494,866,811,996,398,623,601,240,872,886,818,21,673,907,1,759,187,310,520}};
 
-        int[][] input = new int[][]{{1,1},{2,0},{0,2}};
+        int[][] input = new int[][]{{0,2147483647,-1,2147483647,2147483647,-1,-1,0,0,-1,2147483647,2147483647,0,-1,2147483647,2147483647,2147483647,2147483647,0,2147483647,0,-1,-1,-1,-1,2147483647,-1,-1,2147483647,2147483647,-1,-1,0,0,-1,0,0,0,2147483647,0,2147483647,-1,-1,0,-1,0,0,0,2147483647},{2147483647,0,-1,2147483647,0,-1,-1,-1,-1,0,0,2147483647,2147483647,-1,-1,2147483647,-1,-1,2147483647,2147483647,-1,0,-1,2147483647,0,2147483647,-1,2147483647,0,2147483647,0,2147483647,-1,2147483647,0,2147483647,-1,2147483647,0,2147483647,2147483647,0,-1,2147483647,-1,-1,-1,0,2147483647}};
+        main.wallsAndGates(input);
 
-
-        Object output = main.tictactoe(input);
-
-
-        System.out.println("output = " + output);
+        System.out.println("output = " + input);
+//        System.out.println("output = " + output);
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
+    }
+
+    /// https://leetcode.com/problems/walls-and-gates/description/
+    public void wallsAndGates(int[][] rooms) { // TODO
+        for (int i = 0; i < rooms.length; i++) {
+            for (int j = 0; j < rooms[0].length; j++) {
+                if (rooms[i][j] == 0){
+                    /// call the helper
+                    wallsAndGatesHelper(rooms, i, j, 0);
+                }
+            }
+        }
+    }
+
+    private void wallsAndGatesHelper(int[][] rooms, int i, int j, int value) {
+        if (i >= rooms.length || i < 0 || j >= rooms[0].length || j < 0 )
+            return;
+        if (rooms[i][j] < value) return;
+        else rooms[i][j] = value;
+
+        wallsAndGatesHelper(rooms, i, j+1, value+1);
+        wallsAndGatesHelper(rooms, i+1, j, value+1);
+        wallsAndGatesHelper(rooms, i, j-1, value+1);
+        wallsAndGatesHelper(rooms, i-1, j, value+1);
+    }
+
+
+
+    /// https://leetcode.com/problems/surrounded-regions/description/
+    public void solve(char[][] board) {
+        boolean[][] visited = new boolean[board.length][board[0].length];
+
+        for (int j = 0; j < board[0].length; j++) { /// first n last row
+            solveDFS(board, 0, j, visited);
+            solveDFS(board, board.length-1, j, visited);
+        }
+
+        for (int i = 0; i < board.length; i++){
+            solveDFS(board, i, 0, visited);
+            solveDFS(board, i, board[0].length-1, visited);
+        }
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] == 'O')
+                    board[i][j] = 'X';
+                if (visited[i][j])
+                    board[i][j] = 'O';
+            }
+        }
+    }
+
+    private void solveDFS(char[][] board, int i, int j, boolean[][] visited) {
+        if (i < 0 || i >= board.length || j < 0 || j >= board[0].length || board[i][j] == 'X')
+            return;
+
+        board[i][j] = 'X';
+        visited[i][j] = true;
+        solveDFS(board, i, j+1, visited);
+        solveDFS(board, i+1, j, visited);
+        solveDFS(board, i, j-1, visited);
+        solveDFS(board, i-1, j, visited);
+    }
+
+
+    /// https://leetcode.com/problems/island-perimeter/description/
+    public int islandPerimeter(int[][] grid) {
+        int perimeter = 0;
+
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == 1){
+                    if (j-1 < 0 || grid[i][j-1] == 0) perimeter++;
+                    if (i-1 < 0 || grid[i-1][j] == 0) perimeter++;
+                    if (j+1 >= grid[0].length || grid[i][j+1] == 0) perimeter++;
+                    if (i+1 >= grid.length || grid[i+1][j] == 0) perimeter++;
+                }
+            }
+        }
+        return perimeter;
+    }
+
+
+    /// https://leetcode.com/problems/flipping-an-image/description/
+    public int[][] flipAndInvertImage(int[][] image) {
+
+        for (int i = 0; i < image.length; i++) {
+            int j = 0, k = image[i].length-1;
+            while ( j <= k){
+                int temp = image[i][j];
+                image[i][j] = image[i][k] == 0 ? 1 : 0;
+                image[i][k] = temp == 0 ? 1 : 0;
+                j++; k--;
+            }
+        }
+        return image;
     }
 
     /// https://leetcode.com/problems/find-winner-on-a-tic-tac-toe-game/
@@ -96,31 +189,6 @@ public class MatrixMain {
 
     }
 
-    /// https://leetcode.com/problems/surrounded-regions/description/
-    public void solve(char[][] board) { /// TODO
-        for (int i = 1; i < board.length-1; i++) {
-            for (int j = 1; j < board[0].length -1; j++) {
-                if ('O' == board[i][j]){
-                    findIslandAndCapture(board, i, j);
-                }
-            }
-        }
-    }
-
-    public boolean findIslandAndCapture(char[][] board, int row, int col){
-        if (row < 0 || row >= board.length || col < 0 || col >= board[0].length) return false;
-
-        if (board[row][col] == 'X') return true;
-        else {
-            boolean isLand = findIslandAndCapture(board, row+1, col) && findIslandAndCapture(board, row, col+1);
-//                    && (board[row-1][col] == 'X') && (board[row][col-1] == 'X') ;
-            if (isLand) board[row][col] = 'X';
-            return isLand;
-        }
-
-    }
-
-
     /// https://leetcode.com/problems/number-of-laser-beams-in-a-bank/description/
     public int numberOfBeams(String[] bank) {
         int sum = 0; int multiplier = 0;
@@ -183,36 +251,6 @@ public class MatrixMain {
             }
         }
         return true;
-    }
-
-
-    /// https://leetcode.com/problems/walls-and-gates/description/
-    public void wallsAndGates(int[][] rooms) { // TODO
-        boolean[][] visited = new boolean[rooms.length][rooms[0].length];
-
-        for (int i = 0; i < rooms.length; i++) {
-            for (int j = 0; j < rooms[0].length; j++) {
-                if (rooms[i][j] == 2147483647) {
-                    int[] distance = new int[]{};
-                    int[] minDist = new int[]{Integer.MAX_VALUE};
-                    wallsAndGatesHelper(rooms, i, j, visited, distance, minDist);
-                }
-            }
-        }
-    }
-
-    public int wallsAndGatesHelper(int[][] rooms, int row, int col, boolean[][] visited, int[] distance, int[] minDist) {
-        if (row < 0 || row >= rooms.length || col < 0 || col >= rooms[0].length) return -1;
-        if (rooms[row][col] == -1 || rooms[row][col] == 2147483647) return -1;
-        if (rooms[row][col] == 0) return 0;
-        visited[row][col] = true;
-        int x1 = wallsAndGatesHelper(rooms, row-1, col, visited, distance, minDist);
-        int x2 = wallsAndGatesHelper(rooms, row, col-1, visited, distance, minDist);
-        int x3 = wallsAndGatesHelper(rooms, row+1, col, visited, distance, minDist);
-        int x4 = wallsAndGatesHelper(rooms, row, col+1, visited, distance, minDist);
-
-
-        return -1;
     }
 
     /// https://leetcode.com/problems/image-smoother/

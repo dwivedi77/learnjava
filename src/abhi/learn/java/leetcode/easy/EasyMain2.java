@@ -20,6 +20,19 @@ public class EasyMain2 {
         System.out.println("END");
     }
 
+    /// https://leetcode.com/problems/length-of-last-word/
+    public int lengthOfLastWord(String s) {
+        s = s.trim();
+        int count = 0;
+        for (int i = s.length()-1; i >= 0; i--) {
+            if (s.charAt(i) == ' ')
+                break;
+            else count++;
+        }
+        return count;
+    }
+
+
     /// https://leetcode.com/problems/relative-ranks/
     public String[] findRelativeRanks(int[] score) {
         String[] output = new String[score.length];
@@ -808,7 +821,28 @@ public class EasyMain2 {
     }
 
     /// https://leetcode.com/problems/reverse-words-in-a-string-ii/
-    private static void reverseWords(char[] s) {
+    private void reverseWords(char[] s) {
+        Stack<Character> stack = new Stack<>();
+        char[] result = new char[s.length];
+        int idx = 0;
+        for (int i = s.length-1; i >= 0 ; i--) {
+            char x = s[i];
+            if (x == ' '){
+                while (!stack.empty())
+                    result[idx++] = stack.pop();
+                result[idx++] = x;
+            }else {
+                stack.push(x);
+            }
+        }
+        while (!stack.empty())
+            result[idx++] = stack.pop();
+
+        for (int i = 0; i < s.length; i++) {
+            s[i] = result[i];
+        }
+    }
+    private static void reverseWords_2(char[] s) {
         if (s == null || s.length==0) return;
         //first reverse the entire string,
         int i=0,j=s.length-1;

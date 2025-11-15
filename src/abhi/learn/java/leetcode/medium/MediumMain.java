@@ -17,8 +17,9 @@ public class MediumMain {
     public static void main(String[] args) {
         System.out.println("START");
         long startTime = System.currentTimeMillis();
+        MediumMain main = new MediumMain();
 
-        Object output = letterCombinations("563");
+        Object output = main.isInterleave("aabcc","dbbca","aadbbcbcac");
 //        Object output = rankTeams(new String[]{"ABC","ACB","ABC","ACB","ACB"});
         System.out.println("Answer="+output);
 
@@ -26,38 +27,205 @@ public class MediumMain {
         System.out.println("END");
     }
 
+    /// https://leetcode.com/problems/interleaving-string/description/
+    public boolean isInterleave(String s1, String s2, String s3) { /// TODO improve the performance
+        if (s1.length() + s2.length() != s3.length()) return false;
+        Boolean[][] memory = new Boolean[s1.length()+1][s2.length()+1];
+        return isInterleaveHelper(s1, 0, s2, 0, "", s3, memory);
+    }
+
+    public boolean isInterleaveHelper(String s1, int i, String s2, int j, String result, String s3, Boolean[][] memory){
+        if (i == s1.length() && j == s2.length() && result.equals(s3)) {
+            return true;
+        }
+        if (i < s1.length() && j < s2.length() && memory[i][j] != null) return memory[i][j];
+
+        if ( result.length() > 0 && !result.equals(s3.substring(0, result.length())) ) {
+            return false;
+        }
+
+        boolean ans = false;
+        if (i < s1.length()) ans |= isInterleaveHelper(s1, i+1, s2, j, result+s1.charAt(i), s3, memory);
+        if (j < s2.length()) ans |= isInterleaveHelper(s1, i, s2, j+1, result+s2.charAt(j), s3, memory);
+        memory[i][j] = ans;
+
+        return ans;
+    }
+
+    /// https://leetcode.com/problems/decode-ways/description/
+    public static int numDecodings(String s) {
+        if (s ==null || s.length() == 0 || '0' == s.charAt(0))
+            return 0;
+        int n = s.length()+1;
+        int[] dp = new int[n];
+        dp[0] = 1;
+        dp[1] = 1;
+
+        for (int i = 2; i < n; i++) {
+            int x = Integer.parseInt(s.substring(i-1, i));
+            if (x <= 9 && x >= 1)
+                dp[i] += dp[i - 1];
+            x = Integer.parseInt(s.substring(i-2, i));
+
+            if (x >= 10 && x <= 26)
+                dp[i] += dp[i - 2];
+        }
+        return dp[s.length()];
+    }
+
+    ///
+    ///https://leetcode.com/problems/insert-interval/description/
+    public static int[][] insert(int[][] intervals, int[] newInterval) {
+        if (intervals == null || newInterval == null || newInterval.length == 0)
+            return intervals;
+
+        List<int[]> mergedList = new LinkedList<>();
+        boolean merged = false;
+
+        for (int i = 0; i < intervals.length; i++) {
+            int[] current = intervals[i];
+            if (newInterval[0] <= current[0] && !merged) {
+                mergedList.add(newInterval);
+                merged = true;
+            }
+            mergedList.add(current);
+        }
+        if (!merged)
+            mergedList.add(newInterval);
+
+        List<int[]> result = new LinkedList<>();
+        result.add(mergedList.get(0));
+
+        int[] mergedInt = new int[2];
+
+        for (int i = 1; i < mergedList.size(); i++) {
+            int[] prev = result.get(result.size()-1);
+            int[] current = mergedList.get(i);
+
+            if (current[0] <= prev[1]){
+                // do stuff
+                mergedInt[0] = prev[0];
+                mergedInt[1] = current[1] > prev[1] ? current[1] : prev[1];
+                result.remove(result.size()-1);
+                result.add(mergedInt);
+            }else {
+                result.add(current);
+            }
+        }
+
+        int[][] output = result.toArray(new int[result.size()][]);
+        return output;
+    }
+
+    public static int[][] insert_2(int[][] intervals, int[] newInterval) {
+        if (intervals == null || newInterval == null || newInterval.length == 0)
+            return intervals;
+
+        List<int[]> result = new LinkedList<>();
+        result.add(newInterval);
+
+        int[] mergedInt = new int[2];
+
+        for (int i = 0; i < intervals.length; i++) {
+            int[] current = intervals[i];
+            int[] existing = result.get(result.size()-1);
+
+            if (existing[0] > current[1]){
+                result.add(result.size()-1, current);
+            } else if ( (existing[0] >= current[0] && existing[0] <= current[1])
+                || (current[0] >= existing[0] && current[0] <= existing[1])
+            ) { //overlapping
+                mergedInt[0] = current[0] < existing[0] ? current[0] : existing[0];
+                mergedInt[1] = current[1] > existing[1] ? current[1] : existing[1];
+                result.remove(result.size()-1);
+                result.add(mergedInt);
+            }else if (existing[1] < current[0]){
+                result.add(current);
+            }
+
+        }
+
+        int[][] output = result.toArray(new int[result.size()][]);
+        return output;
+    }
+
+    /// https://leetcode.com/problems/count-and-say/
+    private static String countAndSay(int n) {
+        if (n <= 1) return "1";
+        if (n == 2) return "11";
+        String prevCountnSay = countAndSay(n-1);
+
+        StringBuilder sb = new StringBuilder();
+        int count = 1;
+        char prevChar = prevCountnSay.charAt(0);
+        for (int i = 1; i < prevCountnSay.length(); i++) {
+            char currChar = prevCountnSay.charAt(i);
+            if (prevChar == currChar){
+                count++;
+            } else {
+                sb.append(count);
+                sb.append(prevChar);
+                prevChar = currChar;
+                count = 1;
+            }
+        }
+        if (count >= 1){
+            sb.append(count);
+            sb.append(prevChar);
+        }
+
+        return sb.toString();
+    }
+
+
+    /// https://leetcode.com/problems/zigzag-conversion/
+    private static String convertToZigZag(String s, int numRows) {
+        if (s == null || s.length() == 0 || numRows <= 1) return s;
+
+
+        int[] indices = new int[s.length()];
+        boolean sameColumn = true;
+        int strIndex = 0;
+        List<StringBuilder> listOfBuilders = new ArrayList<>(numRows);
+        for (int i = 0; i < indices.length; i++) {
+            if (listOfBuilders.size() <= strIndex)
+                listOfBuilders.add(new StringBuilder());
+
+            listOfBuilders.get(strIndex).append(s.charAt(i));
+            indices[i] = strIndex;
+            if (sameColumn){
+                if(strIndex < numRows-1)
+                    strIndex++;
+                else {
+                    sameColumn = false;
+                    strIndex--;
+                }
+            }
+            else{
+                if (strIndex == 0){
+                    sameColumn = true;
+                    strIndex++;
+                }else
+                    strIndex--;
+            }
+        }
+        StringBuilder result = new StringBuilder();
+        for (StringBuilder sb: listOfBuilders) {
+            result.append(sb);
+        }
+        return result.toString();
+    }
 
     /// https://leetcode.com/problems/rank-teams-by-votes/description/
-    /// https://leetcode.com/problems/zigzag-conversion/
 
     public static String rankTeams(String[] votes) {
         if (votes == null) return null;
         if (votes.length == 1) return votes[0];
 
-        int noOfTeams = votes[0].length();
-        int noOfVotes = votes.length;
-        List<Map<String, Integer>> convertedMapList = new ArrayList<>();
-
-        for (int i = 0; i < votes.length; i++) {
-            String vote = votes[i];
-            convertedMapList.add(new HashMap<>());
-            for (int j = 0; j < vote.length(); j++) {
-                String team = vote.charAt(j)+"";
-                if (convertedMapList.get(i).containsKey(team))
-                    convertedMapList.get(i).put(team, convertedMapList.get(i).get(team)+1);
-                else
-                    convertedMapList.get(i).put(team, 1);
-            }
-        }
-
 
         return "";
     }
 
-    private static String convertToZigZag(String s, int numRows) { // TODO
-        if (s == null || s.length() == 0) return s;
-        return "";
-    }
 
     /// https://leetcode.com/problems/generate-parentheses/
     private static List<String> generateParenthesis(int n) { //// (())(())
@@ -190,34 +358,6 @@ public class MediumMain {
         }
         System.arraycopy(output, 0, board, 0, output.length);
         System.out.println();;
-    }
-
-
-    ///https://leetcode.com/problems/insert-interval/description/
-    public static int[][] insert(int[][] intervals, int[] newInterval) {
-        int[][] output = new int[intervals.length][2];
-        int idx = 0; int merging = 0;
-        for (int i = 0; i < intervals.length; i++) {
-
-            int[] interval = intervals[i];
-
-            if (merging == 0 && newInterval[0] <= interval[1]) { //lower merging found
-                output[idx][0] = (newInterval[0] <= interval[0]) ? newInterval[0] : interval[0];
-                merging++;
-            }
-            if (merging == 1){
-                if (newInterval[1] < interval[0]){
-                    output[idx++][1] = newInterval[1]; merging++;
-                } else if (newInterval[1] == interval[0] || newInterval[1] <= interval[1]){
-                    output[idx++][1] = interval[1];
-                    merging++;
-                }
-                continue;
-            }
-
-            if (merging == 0 || merging > 1)output[idx++] = interval;
-        }
-        return output;
     }
 
 
@@ -604,32 +744,25 @@ public class MediumMain {
 
     private static int[][] mergeII(int[][] intervals) {
         if (intervals == null || intervals.length <= 1) return intervals;
-
-        Arrays.sort(intervals, new Comparator<int[]>() {
-            @Override
-            public int compare(int[] o1, int[] o2) {
-                return Integer.compare(o1[0], o2[0]);
-            }
+        Arrays.sort(intervals, (o1, o2) -> {
+            return Integer.compare(o1[0], o2[0]);
         });
 
-        List<int[]> mergedList = new ArrayList<>();
-
+        List<int[]> mergedList = new LinkedList<>();
+        mergedList.add(intervals[0]);
         for (int i = 1; i < intervals.length; i++) {
-            int[] first = intervals[i - 1];
-            int[] second = intervals[i];
-            if ((first[0] <= second[0] && first[1] >= second[0]) || (second[0] <= first[0] && second[1] >= first[0])) { // merge
-                int[] merged = new int[]{(first[0] <= second[0] ? first[0] : second[0]), (first[1] >= second[1] ? first[1] : second[1])};
-                intervals[i] = merged;
-            } else {
-                mergedList.add(first);
+            int[] previous = mergedList.get(mergedList.size()-1);
+            int[] current = intervals[i];
+            int[] merged = new int[2];
+            if (current[0] <= previous[1]){
+                merged[0] = previous[0] < current[0] ? previous[0] : current[0];
+                merged[1] = previous[1] < current[1] ? current[1] : previous[1];
+                mergedList.set(mergedList.size()-1, merged);
+            }else {
+                mergedList.add(current);
             }
-            if (i == intervals.length - 1) mergedList.add(intervals[i]);
         }
-
-        int[][] output = new int[mergedList.size()][];
-        for (int i = 0; i < mergedList.size(); i++) {
-            output[i] = mergedList.get(i);
-        }
+        int[][] output = mergedList.toArray(new int[mergedList.size()][]);
         return output;
     }
 
@@ -1184,22 +1317,6 @@ public class MediumMain {
         return -1;
     }
 
-    /// https://leetcode.com/problems/decode-ways/
-    private static int numDecodings(String s) {
-//        HashSet<Integer> keys = new HashSet<>();
-//        for (int i = 1; i <= 26; i++) {
-//            keys.add(i);
-//        }
-        int[] count = new int[1];
-//        for (int i = 0; i < s.length(); i++) {
-//            int x = s.charAt(i) - 48;
-//            if (keys.contains(x))count++;
-//            if (i < s.length()-1 && keys.contains(10*x+ (s.charAt(i+1)-48)))count++;
-//        }
-        numDecodingsHelper(s, 0, count);
-        return count[0];
-    }
-
     ///May day 4
     private static int findComplement(int num) {
         int temp = num;
@@ -1221,26 +1338,6 @@ public class MediumMain {
         int digits = (int) (Math.log(num) / Math.log(2)) + 1;
         long allOnes = (long) Math.pow(2, digits) - 1;
         return (int) (num ^ allOnes);
-    }
-
-    private static void numDecodingsHelper(String s, int idx, int[] count) {
-        if (idx < 0 || idx > s.length()) return;
-        if (idx == s.length()) {
-            count[0]++;
-            return;
-        } else {
-            for (int i = idx; i < s.length(); i++) {
-                numDecodingsHelper(s, i + 1, count);
-                if (i < s.length() - 1) {
-                    int y = 10 * (s.charAt(i) - 48) + (s.charAt(i + 1) - 48);
-                    if (y >= 1 && y <= 26) {
-                        numDecodingsHelper(s, i + 2, count);
-                        i++;
-                    }
-                }
-            }
-        }
-
     }
 
     ///May day 3
