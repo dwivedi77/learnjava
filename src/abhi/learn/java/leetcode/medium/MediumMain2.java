@@ -9,14 +9,31 @@ public class MediumMain2 {
         long startTime = System.currentTimeMillis();
 
         MediumMain2 main = new MediumMain2();
-        Object output = main.topKFrequent(new int[]{1,2,1,2,1,2,3,1,3,2}, 3);
+        Object output = main.maxProduct(new int[]{2,3,-2,4});
 //
         System.out.println("Answer="+output);
 
         System.out.println("Time Taken=" + (System.currentTimeMillis() - startTime));
         System.out.println("END");
     }
-    /// https://leetcode.com/problems/merge-k-sorted-lists/description/
+
+    ///  https://leetcode.com/problems/maximum-product-subarray/description/
+    public int maxProduct(int[] nums) {
+        if (nums.length == 1) return nums[0];
+        int maxProduct = Integer.MIN_VALUE;
+
+        for (int i = 0; i < nums.length; i++) {
+            int product = nums[i];
+            for (int j = i+1; j < nums.length; j++) {
+                int y = nums[j];
+                product *= y;
+                if (product > maxProduct){
+                    maxProduct = product;
+                }
+            }
+        }
+        return maxProduct;
+    }
 
 
 
